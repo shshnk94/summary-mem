@@ -9,7 +9,13 @@ dependencies = [
     "numpy",
     "networkx",
     "python-dotenv",
+    "huggingface-hub>=1.21.0",
+    "pandas>=3.0.3",
+    "plotnine>=0.15.7",
 ]
+
+[project.scripts]
+summary-mem-eval = "summary_mem.eval:main"
 
 [build-system]
 requires = ["hatchling"]
