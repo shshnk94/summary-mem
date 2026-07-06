@@ -1,37 +1,23 @@
-"""Prompts for the running per-speaker summary.
-
-See ``memory.py``: each speaker has a summary that is rewritten from
-(existing summary + new turns) every time that speaker produces turns.
-
-``RAPTOR`` and ``MEM0`` below are the original prompts from those projects,
-copied verbatim so they can be A/B tested against our own prompt.
-"""
-
 from datetime import datetime
 
-SUMMARY_SYSTEM_PROMPT = (
-    "You maintain a concise, factual running summary of a single speaker in a "
-    "conversation. Integrate the new turns into the existing summary, keeping as "
-    "many key details as possible while dropping filler and small talk. Capture "
-    "the speaker's stable state: their preferences and opinions, personal "
+SYSTEM_PROMPT = (
+    "You maintain a concise, factual running summary of a speaker's turns in a conversation. "
+    "Integrate the new turns into the existing summary, "
+    "keeping as many key details as possible while dropping filler and small talk. "
+    "Capture the speaker's stable state: their preferences and opinions, personal "
     "details and relationships, plans, decisions, and goals, professional "
-    "details, health and well-being, and any other concrete facts or events "
-    "they reveal about themselves. Update or correct anything that has changed "
-    "and keep everything that still holds. Preserve specifics such as proper "
-    "nouns, exact quantities, and dates or clear temporal references, and never "
-    "fabricate or infer anything the turns do not support. Write in the third "
-    "person and return only the updated summary text, with no preamble."
+    "details, health and well-being, and any other concrete facts or events they reveal about themselves. "
+    "Update or correct anything that has changed and keep everything that still holds. "
+    "Preserve specifics such as proper nouns, exact quantities, and dates or clear temporal references, "
+    "and never fabricate or infer anything the turns do not support. "
+    "Write in the third person and return only the updated summary text, with no preamble."
 )
 
-UPDATE_TEMPLATE = """\
-Existing summary of {speaker}:
-{existing}
-
-New turns spoken by {speaker}:
-{turns}
-
-Return the updated summary of {speaker}."""
-
+SUMMARY_PROMPT = (
+    "Existing summary of {speaker}:\n{existing}\n\n"
+    "New turns spoken by {speaker}:\n{turns}\n\n"
+    "Return the updated summary of {speaker}."
+)
 
 # --- Baseline prompts from prior work, copied verbatim for comparison --------
 

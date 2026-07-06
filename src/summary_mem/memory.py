@@ -6,7 +6,7 @@ from openai import OpenAI
 
 from .config import DEFAULT_LLM_MODEL
 from .database import Database
-from .prompts.summarization import SUMMARY_SYSTEM_PROMPT, UPDATE_TEMPLATE
+from .prompts.summarization import SUMMARY_PROMPT, SYSTEM_PROMPT
 
 
 class SummaryMemory:
@@ -22,8 +22,14 @@ class SummaryMemory:
         self.db = Database(db_path)
 
     def update(self, conversation_id: str, speaker_id: str, turn_text: str) -> None:
+
+        # load the database to memory
         existing = self.db.load(conversation_id, speaker_id)
+
+        # update the summary with the new turn
         updated = self.summarize(speaker_id, existing, turn_text)
+
+        # save the updated summary back to the database
         self.db.save(conversation_id, speaker_id, updated)
 
     def recall(self, conversation_id: str) -> dict[str, str]:
@@ -33,7 +39,7 @@ class SummaryMemory:
         self.db.close()
 
     def summarize(self, speaker: str, existing: str | None, turn_text: str) -> str:
-        prompt = UPDATE_TEMPLATE.format(
+        prompt = SUMMARY_PROMPT.format(
             speaker=speaker,
             existing=existing or "(no summary yet)",
             turns=turn_text,
@@ -41,7 +47,7 @@ class SummaryMemory:
         response = self.chat_client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": SUMMARY_SYSTEM_PROMPT},
+                {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
         )
