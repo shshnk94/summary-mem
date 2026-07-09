@@ -33,11 +33,9 @@ class Database:
         return rows[0][0] if rows else None
 
     def load_all(self, conversation_id: str) -> dict[str, str]:
-        rows = self.connection.execute(
-            "SELECT speaker_id, summary FROM summaries "
-            "WHERE conversation_id = ? ORDER BY speaker_id",
-            (conversation_id,),
-        ).fetchall()
+
+        query = f"SELECT speaker_id, summary FROM summaries WHERE conversation_id = '{conversation_id}' ORDER BY speaker_id"
+        rows = self.connection.execute(query).fetchall()
         return {speaker: summary for speaker, summary in rows}
 
     def save(self, conversation_id: str, speaker_id: str, summary: str) -> None:
