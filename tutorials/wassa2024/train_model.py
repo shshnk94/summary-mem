@@ -1,165 +1,340 @@
-"""Predict the Big-5 inventory from `memllm.conversations_train` n-grams.
+"""Predict the Big-5 inventory from `memllm.conversations_train` language.
 
-The n-gram counterpart to commands.py: same units, same outcomes, same folds,
-same regression code path -- only the feature space changes, from mean-pooled
-roberta-large embeddings to 1-to-3 grams. Follows
-https://dlatk.github.io/dlatk/tutorials/tut_pred.html.
+Follows https://dlatk.github.io/dlatk/tutorials/tut_pred.html.
 
-Everything downstream of feature extraction is shared, so this module contributes
-exactly two things: the NGRAM Variant, and the ngrams() extractor that builds its
-feature table. prepare(), train() and predict() are commands.py's, unmodified.
+--features  ngram (occurrence-filtered 1-to-3 grams, ridgecv) or roberta-base
+            (mean-pooled layer-11 embeddings, ridgecv).
+--group     speaker_id (71 people) or conv_speaker (974 pairs -- more rows, but a
+            person recurs across their conversations).
 
-One training unit per (conversation, speaker), keyed by the `conv_speaker` group
-column. That column, and the `big5_train` outcome table keyed by it, are built by
-commands.prepare() -- see the docstring there for why DLATK cannot read
-`surveys_train` directly.
+Big-5 is a stable per-person trait, so at conv_speaker level random k-fold CV
+would put the same person in train and test and partly measure speaker
+re-identification -- which n-grams exploit harder than embeddings, a reused rare
+trigram being a near-unique fingerprint. prepare_outcome_table() therefore folds
+by *speaker* at both levels, and --nfold_regression honours that via
+--fold_column.
 
-Feature space. Raw 1/2/3-grams over 974 units give 235,981 distinct features, far
-more than ridge can fit without the regularisation path collapsing onto noise
-terms seen in one conversation. --feat_occ_filter keeps only features occurring
-in more than P_OCC of the groups, dropping that to 901 at P_OCC = 0.05 -- the
-same order as the 704 features of the pretrained OCEAN pickle in apply_pickle.py.
-DLATK writes the survivors to a new table suffixed with the threshold (`$0_05`),
-leaving the unfiltered table in place.
-
-CAVEAT: inherited from commands.py -- Big-5 is a stable trait, so a person carries
-identical labels into all of their conversations. Random k-fold CV puts the same
-person in both train and test, so the reported accuracy partly measures speaker
-re-identification. n-grams make that *worse* than embeddings do: an idiolect
-(a rare trigram a person reuses) is a near-unique speaker fingerprint. Group the
-folds by person (DLATK's --fold_column) for a clean generalisation estimate.
-
-Steps (all run when no step flag is passed):
-  1. --prepare       add `conv_speaker`, build the `big5_train` outcome table.
-                     Shared with commands.py; a no-op once it has run.
-  2. --ngrams        extract 1/2/3-grams, combine into one `1to3gram` table, then
-                     occurrence-filter it to `...$0_05`.
-  3. --train_ngram   10-fold cross-validated ridgecv, reporting R/r/rho/MSE/MAE
-                     per outcome to output/, plus a final model over all 974
-                     units saved to models/.
-  4. --predict_ngram apply that model, writing predicted Big-5 per (conversation,
-                     speaker) to `feat$p_ridg_big5ng$conversations_train$conv_speaker`.
+The outcome table is rebuilt on every invocation. The three steps below all run
+when no step flag is passed:
+  --extract   build the feature table named by --features.
+  --train     cross-validated fit to output/; saves a model if --picklefile.
+  --predict   predicted Big-5 to a feature table, applying --picklefile if given,
+              otherwise fitting first.
 """
 
 import argparse
+import subprocess
+from pathlib import Path
 
-# On merge into commands.py, drop this import: every name is already in that module.
-from commands import (
-    DATABASE,
-    GROUP_FIELD,
-    GROUP_FREQ_THRESH,
-    MESSAGE_TABLE,
-    MESSAGE_FIELD,
-    MESSAGEID_FIELD,
-    NFOLDS,
-    Variant,
-    predict,
-    prepare,
-    run,
-    train,
-)
+import pandas as pd
+from sqlalchemy import Double, MetaData, Table, create_engine, text
+from sqlalchemy.dialects.mysql import TINYINT
 
 ### ---- Configuration ----
 
-NGRAMS = ["1", "2", "3"]
-FEATURE_NAME = "1to3gram"
+DATABASE = "memllm"
 
-# Keep features occurring in more than 5% of the 974 units: 235,981 -> 901.
-# DLATK labels the filtered table with the threshold, '.' -> '_'
-# (featureRefiner.createTableWithRemovedFeats:286).
-P_OCC = 0.05
-P_OCC_LABEL = str(P_OCC).replace(".", "_")
+# `text`, not DLATK's default `message` (dlaConstants.DEF_MESSAGE_FIELD).
+MESSAGE_TABLE = "conversations_train"
+MESSAGE_FIELD = "text"
+MESSAGEID_FIELD = "message_id"
 
-BASE_FEATURE_TABLE = f"feat${FEATURE_NAME}${MESSAGE_TABLE}${GROUP_FIELD}"
-FEATURE_TABLE = f"{BASE_FEATURE_TABLE}${P_OCC_LABEL}"
+OUTCOME_TABLE = "surveys_train"
+SPEAKER_FIELD = "speaker_id"  # `person_id` in OUTCOME_TABLE
+FOLD_FIELD = "fold"
+OUTCOMES = [
+    "personality_openness",
+    "personality_conscientiousness",
+    "personality_extraversion",
+    "personality_agreeableness",
+    "personality_stability",  # reverse-scored neuroticism
+]
 
-# RidgeCV picks alpha per outcome by internal CV. commands.py can hard-code
-# ridge1000 because roberta's 1024 dense dimensions are on a known scale; the
-# right penalty for a sparse, occurrence-filtered n-gram matrix is not knowable
-# up front. Set feature_selection="magic_sauce" for DLATK's standard n-gram
-# pipeline (occurrence threshold -> SelectFwe -> randomized PCA); it is left off
-# here so the learned coefficients stay one-per-n-gram and remain readable.
-#
-# prediction_name is "big5ng", not commands.py's "big5", so the embedding and
-# n-gram predictions sit side by side in the database rather than overwrite.
-NGRAM = Variant(
-    name=f"big5_{GROUP_FIELD}_{FEATURE_NAME}_p{P_OCC_LABEL}_ridgecv",
-    feature_table=FEATURE_TABLE,
-    model="ridgecv",
-    prediction_name="big5ng",
-    feature_selection="",
-)
+GROUPS = ["speaker_id", "conv_speaker"]  # DLATK's -c; both are columns of MESSAGE_TABLE
+NFOLDS = 10
+GROUP_FREQ_THRESH = "0"  # keep every unit; a gft > 0 needs a 1gram word table
+
+# `table` is the name DLATK derives, so it must track extract()'s flags:
+# roberta-base + mean + L11 + concatenate -> roberta_ba_meL11con
+# (featureExtractor.py:1328); n-grams get the --set_p_occ suffix, '.' -> '_'
+# (featureRefiner.createTableWithRemovedFeats:286). Wrong name and extraction
+# writes one table while train/predict read another.
+FEATURES = {
+    "roberta-base": {
+        "table": "feat$roberta_ba_meL11con${corptable}${group}",
+        # RidgeCV picks alpha by LOO within each training fold -- a fixed alpha is
+        # arbitrary at n=71, p=768. Grid: [1000, 0.1, 1, 10, 100, 1e4, 1e5].
+        "model": "ridgecv",  # a key of RegressionPredictor.cvParams
+        "prediction_name": "big5",  # DLATK prefixes it with "p_" + model[:4]
+        "output_stem": "big5_{group}_roberta-base_L11_ridgecv",
+    },
+    "ngram": {
+        "table": "feat$1to3gram${corptable}${group}$0_05",
+        "model": "ridgecv",  # sparse matrix; the right alpha is not knowable up front
+        "prediction_name": "big5ng",
+        "output_stem": "big5_{group}_1to3gram_p0_05_ridgecv",
+    },
+}
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+TUTORIAL_DIR = Path(__file__).resolve().parent
+OUTPUT_DIR = REPO_ROOT / "output"
+DLATK = TUTORIAL_DIR / "dlatk" / "dlatkInterface.py"
+PYTHON = REPO_ROOT / ".venv" / "bin" / "python3"
 
 ### ---- Execution ----
 
 
-def ngrams():
-    """1/2/3-grams per (conversation, speaker), combined, then occurrence-filtered.
+def prepare_outcome_table(group):
+    """Rebuild `big5_<group>`: Big-5 per unit, plus a speaker-disjoint fold label.
 
-    dlatkInterface applies these in order within one invocation: extract each n
-    (:1038), combine the three tables into `1to3gram` (:1319), filter that
-    (:1343). Each stage feeds the next through args.feattable, so the whole chain
-    is one command rather than three.
+    DLATK cannot regress on surveys_train directly: it needs an outcome table
+    keyed on a column named like the `-c` group field (outcomeGetter.py:264,
+    :332), and surveys_train keys on `id`.
 
-    GROUP_FREQ_THRESH stays 0, matching commands.py so the two models are scored
-    over the same 974 rows. A non-zero threshold is now *possible* -- the 1gram
-    word table it needs, feat$1gram$conversations_train$conv_speaker, is a
-    by-product of this step -- but the corpus is short (52 words for the quietest
-    speaker, 233 on average), so DLATK's default of 1000 would empty the set.
+    Joining through MESSAGE_TABLE lets one schema serve both group fields, and
+    drops surveyed pairs that never speak -- otherwise an all-zero feature vector
+    carrying a real label (featureGetter.py:336). pd.merge rather than SQL, so
+    `messages` stays in hand for the unsurveyed check below.
+
+    Ranking the *speaker* puts all of one person's rows in one fold at either
+    grouping level. Beware: testControlCombos overrides --folds with the number
+    of distinct labels (regressionPredictor.py:815-822).
+
+    The group column is typed from MESSAGE_TABLE; pandas infers TEXT, too wide
+    for a primary key and unindexed for DLATK's join to the feature table's
+    group_id.
     """
-    run(
-        [
+    table = f"big5_{group}"
+    engine = create_engine(f"mysql://ssubrahmanya@localhost/{DATABASE}?charset=utf8mb4")
+
+    # dict.fromkeys dedups in order: at speaker_id level `group` is SPEAKER_FIELD,
+    # and naming a column twice would merge into duplicate columns.
+    unit_columns = list(dict.fromkeys(["conversation_id", SPEAKER_FIELD, group]))
+    keep = list(dict.fromkeys([group, SPEAKER_FIELD, *OUTCOMES]))
+
+    messages = pd.read_sql(f"SELECT DISTINCT {', '.join(unit_columns)} FROM {MESSAGE_TABLE}", engine)
+    surveys = pd.read_sql(
+        f"SELECT conversation_id, person_id, {', '.join(OUTCOMES)} FROM {OUTCOME_TABLE}", engine
+    )
+
+    # Collapses a unit's conversations to one row -- unless they carry more than
+    # one Big-5 vector, which the duplicate check below catches.
+    surveyed = messages.merge(
+        surveys,
+        left_on=["conversation_id", SPEAKER_FIELD],
+        right_on=["conversation_id", "person_id"],
+    )[keep].drop_duplicates()
+
+    dupes = surveyed[group][surveyed[group].duplicated()].unique()
+    if len(dupes):
+        raise SystemExit(
+            f"{len(dupes)} {group} units carry more than one Big-5 vector: {list(dupes[:5])}"
+        )
+
+    # A missing or partial outcome row silently shrinks the training set.
+    speaks = messages[group].drop_duplicates()
+    missing = speaks[~speaks.isin(surveyed[group])]
+    if len(missing):
+        raise SystemExit(
+            f"{len(missing)} of {len(speaks)} {group} units speak but have no survey "
+            f"row: {list(missing[:5])}"
+        )
+    blank = surveyed[group][surveyed[OUTCOMES].isna().any(axis=1)]
+    if len(blank):
+        raise SystemExit(f"{len(blank)} {group} units have a null outcome: {list(blank[:5])}")
+
+    surveyed[FOLD_FIELD] = pd.factorize(surveyed[SPEAKER_FIELD], sort=True)[0] % NFOLDS
+    outcomes = surveyed[[group, FOLD_FIELD, *OUTCOMES]]
+
+    key_type = Table(MESSAGE_TABLE, MetaData(), autoload_with=engine).c[group].type
+    # to_sql declares neither PRIMARY KEY nor NOT NULL, so restate both.
+    tighten = ", ".join(
+        [f"MODIFY {FOLD_FIELD} TINYINT UNSIGNED NOT NULL"]
+        + [f"MODIFY {o} DOUBLE NOT NULL" for o in OUTCOMES]
+    )
+    with engine.begin() as conn:
+        # "replace" drops and recreates, so a failure above leaves the previous
+        # table standing; the ALTER shares this transaction with it.
+        outcomes.to_sql(
+            table, conn, if_exists="replace", index=False,
+            dtype={group: key_type, FOLD_FIELD: TINYINT(unsigned=True),
+                   **{o: Double for o in OUTCOMES}},
+        )
+        conn.execute(text(f"ALTER TABLE {table} ADD PRIMARY KEY ({group}), {tighten}"))
+    engine.dispose()
+    print(f"[{table}: {len(outcomes)} units, {NFOLDS} speaker-disjoint folds]")
+
+
+def extract(group, features):
+    """Build the feature table named by `features`.
+
+    The n-gram call chains three stages through args.feattable: extract each n,
+    combine into `1to3gram`, filter (dlatkInterface.py:1038, :1319, :1343).
+    --set_p_occ is a *proportion of groups*, so 0.05 means two different things:
+    four speakers at speaker_id level, forty-nine conversations at conv_speaker.
+
+    GROUP_FREQ_THRESH stays 0 so both spaces score over the same rows; DLATK's
+    default of 1000 would empty this corpus (233 words per unit).
+    """
+    if features == "ngram":
+        command = [
+            PYTHON, DLATK,
             "-d", DATABASE,
             "-t", MESSAGE_TABLE,
-            "-c", GROUP_FIELD,
+            "-c", group,
             "--message_field", MESSAGE_FIELD,
             "--messageid_field", MESSAGEID_FIELD,
             "--add_ngrams",
-            "-n", *NGRAMS,
-            "--combine_feat_tables", FEATURE_NAME,
+            "-n", "1", "2", "3",
+            "--combine_feat_tables", "1to3gram",
             "--feat_occ_filter",
-            "--set_p_occ", str(P_OCC),
-            "--group_freq_thresh", str(GROUP_FREQ_THRESH),
+            "--set_p_occ", "0.05",
+            "--group_freq_thresh", GROUP_FREQ_THRESH,
         ]
-    )
+    else:
+        command = [
+            PYTHON, DLATK,
+            "-d", DATABASE,
+            "-t", MESSAGE_TABLE,
+            "-c", group,
+            "--message_field", MESSAGE_FIELD,
+            "--messageid_field", MESSAGEID_FIELD,
+            "--add_emb_feat",
+            "--embedding_model", "roberta-base",
+            "--embedding_msg_aggregation", "mean",  # over turns
+            "--embedding_word_aggregation", "mean",  # over word pieces
+            "--embedding_layer_aggregation", "concatenate",
+            "--embedding_layers", "11",  # second-to-last of 12
+        ]
+    subprocess.run([str(c) for c in command], cwd=TUTORIAL_DIR, check=True)  # dlatk/ lives here
+
+
+def train(group, features, picklefile=None):
+    """Cross-validated fit; with `picklefile`, also a final model over all units.
+
+    Two runs, not one: --output_name persists the metrics, but with
+    --train_regression it also sets saveFeatures (dlatkInterface.py:1889),
+    dumping the dense design matrix per outcome (regressionPredictor.py:658).
+
+    --nfold_regression saves no model -- testControlCombos never assigns
+    self.regressionModels. No --folds: --fold_column already fixes the count.
+    """
+    stem = OUTPUT_DIR / FEATURES[features]["output_stem"].format(group=group)
+    stem.parent.mkdir(parents=True, exist_ok=True)
+    command = [
+        PYTHON, DLATK,
+        "-d", DATABASE,
+        "-t", MESSAGE_TABLE,
+        "-c", group,
+        "--message_field", MESSAGE_FIELD,
+        "--messageid_field", MESSAGEID_FIELD,
+        "-f", FEATURES[features]["table"].format(corptable=MESSAGE_TABLE, group=group),
+        "--outcome_table", f"big5_{group}",
+        "--outcomes", *OUTCOMES,
+        "--group_freq_thresh", GROUP_FREQ_THRESH,
+        "--model", FEATURES[features]["model"],
+        "--nfold_regression",
+        "--fold_column", FOLD_FIELD,
+        # Both suffix --output_name (dlatkInterface.py:1916): .accuracy_data.csv
+        # (r, R2, mse, mae, N, num_features per outcome) and .predicted_data.csv.
+        "--csv",
+        "--pred_csv",
+        "--output_name", stem,
+    ]
+    subprocess.run([str(c) for c in command], cwd=TUTORIAL_DIR, check=True)  # dlatk/ lives here
+    print(f"[metrics -> {stem}.accuracy_data.csv]")
+    print(f"[fold predictions -> {stem}.predicted_data.csv]")
+
+    if picklefile:
+        Path(picklefile).parent.mkdir(parents=True, exist_ok=True)
+        command = [
+            PYTHON, DLATK,
+            "-d", DATABASE,
+            "-t", MESSAGE_TABLE,
+            "-c", group,
+            "--message_field", MESSAGE_FIELD,
+            "--messageid_field", MESSAGEID_FIELD,
+            "-f", FEATURES[features]["table"].format(corptable=MESSAGE_TABLE, group=group),
+            "--outcome_table", f"big5_{group}",
+            "--outcomes", *OUTCOMES,
+            "--group_freq_thresh", GROUP_FREQ_THRESH,
+            "--model", FEATURES[features]["model"],
+            "--train_regression", "--save", "--picklefile", picklefile,
+        ]
+        subprocess.run([str(c) for c in command], cwd=TUTORIAL_DIR, check=True)  # dlatk/ lives here
+        print(f"[model -> {picklefile}]")
+
+
+def predict(group, features, picklefile=None):
+    """Write predicted Big-5 per unit to a feature table.
+
+    Without `picklefile`, fits first: dlatkInterface runs load, train,
+    predict_to_feats, save in that order against one RegressionPredictor
+    (:1883-1957). Omitting --output_name stops --train_regression from also
+    dumping the design matrix.
+    """
+    fit = ["--load", "--picklefile", picklefile] if picklefile else ["--train_regression"]
+    name = FEATURES[features]["prediction_name"]
+    command = [
+        PYTHON, DLATK,
+        "-d", DATABASE,
+        "-t", MESSAGE_TABLE,
+        "-c", group,
+        "--message_field", MESSAGE_FIELD,
+        "--messageid_field", MESSAGEID_FIELD,
+        "-f", FEATURES[features]["table"].format(corptable=MESSAGE_TABLE, group=group),
+        "--outcome_table", f"big5_{group}",
+        "--outcomes", *OUTCOMES,
+        "--group_freq_thresh", GROUP_FREQ_THRESH,
+        "--model", FEATURES[features]["model"],
+        *fit, "--predict_regression_to_feats", name,
+    ]
+    subprocess.run([str(c) for c in command], cwd=TUTORIAL_DIR, check=True)  # dlatk/ lives here
+    table = f"feat$p_{FEATURES[features]['model'][:4]}_{name}${MESSAGE_TABLE}${group}"
+    print(f"\n[predictions -> {DATABASE}.{table}]")
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument(
-        "--prepare",
-        action="store_true",
-        help=f"Step 1: add {MESSAGE_TABLE}.{GROUP_FIELD}, build the Big-5 outcome table",
+        "--group", choices=GROUPS, default="speaker_id",
+        help="training unit for every step (default: %(default)s)",
     )
     parser.add_argument(
-        "--ngrams",
-        action="store_true",
-        help=f"Step 2: extract {'/'.join(NGRAMS)}-grams into {FEATURE_TABLE}",
+        "--features", choices=sorted(FEATURES), default="roberta-base",
+        help="feature space for every step (default: %(default)s)",
     )
     parser.add_argument(
-        "--train_ngram",
-        action="store_true",
-        help=f"Step 3: {NFOLDS}-fold cross-validated {NGRAM.model}, writing "
-             f"{NGRAM.accuracy_csv.name} and saving {NGRAM.pickle_file.name}",
+        "--extract", action="store_true",
+        help="Step 1: build the feature table named by --features",
     )
     parser.add_argument(
-        "--predict_ngram",
-        action="store_true",
-        help=f"Step 4: apply the pickle, writing {NGRAM.prediction_table}",
+        "--train", action="store_true",
+        help=f"Step 2: {NFOLDS}-fold cross-validated fit, writing metrics to output/; "
+             f"saves a model too if --picklefile is given",
+    )
+    parser.add_argument(
+        "--predict", action="store_true",
+        help="Step 3: write predicted Big-5 to a feature table, using --picklefile "
+             "if given, otherwise training first",
+    )
+    parser.add_argument(
+        "--picklefile", type=Path, default=None,
+        help="--train saves the fitted model here; --predict loads it from here",
     )
     args = parser.parse_args()
 
-    # No flags means run the whole pipeline.
-    if not (args.prepare or args.ngrams or args.train_ngram or args.predict_ngram):
-        args.prepare = args.ngrams = args.train_ngram = args.predict_ngram = True
+    # No step flag means run all three.
+    if not (args.extract or args.train or args.predict):
+        args.extract = args.train = args.predict = True
 
-    if args.prepare:
-        prepare()
-    if args.ngrams:
-        ngrams()
-    if args.train_ngram:
-        train(NGRAM)
-    if args.predict_ngram:
-        predict(NGRAM)
-        print(f"\n[predictions written to {DATABASE}.{NGRAM.prediction_table}]")
+    prepare_outcome_table(args.group)
+
+    if args.extract:
+        extract(args.group, args.features)
+    if args.train:
+        train(args.group, args.features, args.picklefile)
+    if args.predict:
+        predict(args.group, args.features, args.picklefile)
