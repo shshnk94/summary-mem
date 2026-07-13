@@ -1,22 +1,72 @@
 from datetime import datetime
 
-SYSTEM_PROMPT = (
-    "You maintain a concise, factual running summary of a speaker's turns in a conversation. "
-    "Integrate the new turns into the existing summary, "
-    "keeping as many key details as possible while dropping filler and small talk. "
-    "Capture the speaker's stable state: their preferences and opinions, personal "
-    "details and relationships, plans, decisions, and goals, professional "
-    "details, health and well-being, and any other concrete facts or events they reveal about themselves. "
-    "Update or correct anything that has changed and keep everything that still holds. "
-    "Preserve specifics such as proper nouns, exact quantities, and dates or clear temporal references, "
-    "and never fabricate or infer anything the turns do not support. "
-    "Write in the third person and return only the updated summary text, with no preamble."
-)
+# SUMMARY_PROMPT = (
+#     "You maintain a concise, factual running summary of a speaker's turns in a conversation. "
+#     "Integrate the new turns into the existing summary, "
+#     "keeping as many key details as possible while dropping filler and small talk. "
+#     "Capture the speaker's stable state: their preferences and opinions, personal "
+#     "details and relationships, plans, decisions, and goals, professional "
+#     "details, health and well-being, and any other concrete facts or events they reveal about themselves. "
+#     "Update or correct anything that has changed and keep everything that still holds. "
+#     "Preserve specifics such as proper nouns, exact quantities, and dates or clear temporal references, "
+#     "and never fabricate or infer anything the turns do not support. "
+#     "Write in the third person and return only the updated summary text, with no preamble.\n\n"
+#     "Existing summary of {speaker}:\n{existing}\n\n"
+#     "New turns spoken by {speaker}:\n{turns}\n\n"
+#     "Return the updated summary of {speaker}."
+# )
+
 
 SUMMARY_PROMPT = (
+    # overall goal of the prompt
+    "Your goal is to maintain a running summary of a speaker's turns in a conversation, "
+    "to support a later assessment of their Big Five (Openness, Conscientiousness, Extraversion, "
+    "Agreeableness, Neuroticism) personality traits. "
+    "Small talk, hedging, humor, and emotional reactions in the turns are valid signals — do not discard them.\n\n"
+
+    # specific procedural instructions for the model to follow
+    "Identify the following information to include in the summary:\n"
+    "1. Stable facts: preferences and opinions, personal details and relationships, plans, "
+    "decisions, goals, professional details, health and well-being.\n"
+    "2. Behavioral evidence: how they react to setbacks, uncertainty, or change; "
+    "how they talk about and treat other people; signs of curiosity, abstract or reflective thinking, versus concrete or routine focus; "
+    "signs of organization, planning, and follow-through versus spontaneity; sociability, warmth, and energy versus reserve; "
+    "emotional tone (positive/negative affect, anxiety, frustration, calm) and how confidently or tentatively they express themselves.\n"
+    "3. Short verbatim quotes or near-verbatim phrasing when a moment is a clear example of the above "
+    "(e.g. a strong reaction, a telling word choice), rather than only paraphrased facts.\n"
+    "4. Notable shifts in mood or tone across turns — if the speaker's affect or attitude changes, note the shift alongside the earlier state.\n\n"
+
+    "Update or correct stable facts that have changed and keep everything that still holds. "
+    "Preserve specifics such as proper nouns, exact quantities, and dates or clear temporal references, "
+    "and never fabricate or infer anything the turns do not support. "
+    "Write the summary in the third person.\n\n"
+
+    # output format instructions
+    "Respond with a single JSON object:\n"
+    "{{\"summary\": <string>}}\n"
+    "- \"summary\": the full updated summary text, with no preamble.\n"
+    "Output only the JSON — no markdown formatting, no surrounding text.\n\n"
+
+    # example illustrating the desired behavior
+    "For example:\n"
+    "  Existing summary: Jordan works as a high school teacher and has been saving up for a trip "
+    "to Japan next spring. Jordan tends to get frustrated when plans are disrupted, as seen when "
+    "a staff meeting ran long and Jordan said, 'I hate when we go over time, it throws off my "
+    "whole afternoon.'\n"
+    "  New turns: \"Ugh, my lesson plan totally fell apart today. I had it all mapped out but "
+    "the kids just weren't into it, so I scrapped it and improvised — actually turned out kind "
+    "of fun, ha. I guess I'm getting more okay with things not going perfectly.\"\n"
+    "  Output: {{\"summary\": \"Jordan works as a high school teacher and has been saving up for "
+    "a trip to Japan next spring. Jordan has previously reacted to disrupted plans with "
+    "frustration (e.g. snapping at a staff meeting running long), but responded to a lesson plan "
+    "falling apart by improvising instead of forcing it and enjoying the result ('actually turned "
+    "out kind of fun, ha'), reflecting that they are 'getting more okay with things not going "
+    "perfectly' — suggesting a shift toward more relaxed adaptability compared to the earlier "
+    "pattern of frustration.\"}}\n\n"
+
+    # final instructions for the model to follow
     "Existing summary of {speaker}:\n{existing}\n\n"
-    "New turns spoken by {speaker}:\n{turns}\n\n"
-    "Return the updated summary of {speaker}."
+    "New turns spoken by {speaker}:\n{turns}"
 )
 
 # --- Baseline prompts from prior work, copied verbatim for comparison --------

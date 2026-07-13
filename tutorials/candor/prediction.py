@@ -1,22 +1,30 @@
-"""WASSA 2024 personality-prediction pipeline.
+"""CANDOR personality-prediction pipeline.
 
-Runs the three stages from the "Experiments" section of ``wassa2024.ipynb`` end to end:
+Runs the three stages from the "Experiments" section of ``candor.ipynb`` end to end:
 
-1. Read the conversation and survey data for a dataset split.
+1. Read the turns and surveys from the `candor` MySQL database.
 2. Store both speakers' turns, turn by turn, into a ``SummaryMemory`` store.
-3. Recall each speaker's rolling summary and assess their Big Five (OCEAN)
-   personality traits, then score the assessments against the self-reported
-   surveys with Pearson correlation (the PER track's official metric).
+3. Recall each speaker's rolling summary and assess their Big Five (OCEAN) personality
+   traits, then score the assessments against the self-reported surveys with Pearson
+   correlation.
+
+The corpus is read from the database under its own column names: turns come from `msgsc`
+(`conversation_id`, `speaker`, `turn_id`, `message`) and the self-reports from `surveys`
+(`user_id`, `conversation_id`, `my_*`). CANDOR scores OCEAN on a ~1-5 scale and reports
+**neuroticism** directly, unlike WASSA's reverse-scored "stability".
 
 The recall step supports two mechanisms, selected with ``--memory``:
 
 * ``summary``    — the default; recall each speaker's rolling ``SummaryMemory`` summary.
-* ``in_context`` — the no-external-memory baseline; feed each speaker's full turn
-  history straight into the assessor, so every turn is present in the same prompt.
+* ``in_context`` — the no-external-memory baseline; feed each speaker's full turn history
+  straight into the assessor, so every turn is present in the same prompt.
+
+CANDOR is large (~1,656 conversations, ~530k turns) and the summary mechanism makes one LLM
+call per stored turn, so use a bounded ``--samples`` for the initial runs.
 
 Usage:
-    python prediction.py --dataset ../../data/wassa2024/train --memory summary
-    python prediction.py --dataset ../../data/wassa2024/train --memory in_context
+    python prediction.py --memory summary --samples 100
+    python prediction.py --memory in_context --samples 100
 """
 
 from __future__ import annotations
@@ -28,6 +36,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy.stats import pearsonr
+from sqlalchemy import create_engine
 from tqdm.auto import tqdm
 
 from openai import OpenAI
@@ -36,44 +45,65 @@ from summary_mem import SummaryMemory
 from summary_mem.clients import get_chat_client
 from summary_mem.config import DEFAULT_LLM_MODEL
 
+DATABASE = "candor"
+
+# The survey columns we assess. The LLM is asked for these keys verbatim, and the assessment
+# CSV carries them as assessed_<trait>, so the whole pipeline speaks the database's own names.
 TRAITS = [
-    "openness",
-    "conscientiousness",
-    "extraversion",
-    "agreeableness",
-    "stability",
+    "my_open",
+    "my_conscientious",
+    "my_extraversion",
+    "my_agreeable",
+    "my_neurotic",
 ]
+
+# What each survey column actually measures — spelled out for the LLM, which cannot be
+# expected to know CANDOR's abbreviations.
+TRAIT_DESCRIPTIONS = {
+    "my_open": "openness to experience",
+    "my_conscientious": "conscientiousness",
+    "my_extraversion": "extraversion",
+    "my_agreeable": "agreeableness",
+    "my_neurotic": "neuroticism",
+}
 
 # One prompt per recall mechanism. The instruction and the framing of {context} differ:
 # 'summary' presents a distilled summary, whereas 'in_context' presents the raw turns.
 PERSONALITY_ASSESSMENT_PROMPTS = {
     "summary": (
         "Given a factual summary of a single person built from their side of a conversation, "
-        "assess their Big Five (OCEAN) personality traits: "
-        "openness, conscientiousness, extraversion, agreeableness, and emotional stability. "
-        "Score each trait on a continuous 1-7 scale (1 = very low, 7 = very high). "
-        "Reply with ONLY a JSON object whose keys are exactly: "
-        "openness, conscientiousness, extraversion, agreeableness, stability.\n\n"
+        "assess their Big Five (OCEAN) personality traits. "
+        "Score each trait on a continuous 1-5 scale (1 = very low, 5 = very high). "
+        "Reply with ONLY a JSON object whose keys are exactly:\n{traits}\n\n"
         "Here is what is known about the speaker {speaker}, summarized from their conversation:\n\n{context}\n\n"
-        "Assess {speaker}'s Big Five personality trait scores (1-7) as JSON."
+        "Assess {speaker}'s Big Five personality trait scores (1-5) as JSON."
     ),
     "in_context": (
         "Given the full transcript of a single person's turns from a conversation, "
-        "assess their Big Five (OCEAN) personality traits: "
-        "openness, conscientiousness, extraversion, agreeableness, and emotional stability. "
-        "Score each trait on a continuous 1-7 scale (1 = very low, 7 = very high). "
-        "Reply with ONLY a JSON object whose keys are exactly: "
-        "openness, conscientiousness, extraversion, agreeableness, stability.\n\n"
+        "assess their Big Five (OCEAN) personality traits. "
+        "Score each trait on a continuous 1-5 scale (1 = very low, 5 = very high). "
+        "Reply with ONLY a JSON object whose keys are exactly:\n{traits}\n\n"
         "Here are all of the turns spoken by {speaker} in the conversation, in order:\n\n{context}\n\n"
-        "Assess {speaker}'s Big Five personality trait scores (1-7) as JSON."
+        "Assess {speaker}'s Big Five personality trait scores (1-5) as JSON."
     ),
 }
 
+# The key list handed to the model, each key annotated with what it measures.
+TRAIT_KEYS = "\n".join(f"- {trait} ({TRAIT_DESCRIPTIONS[trait]})" for trait in TRAITS)
 
-def read_dataset(datafolder: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Stage 1 — read the conversation and survey data."""
-    conversations = pd.read_csv(datafolder / "conversations.csv")
-    surveys = pd.read_csv(datafolder / "surveys.csv")
+
+def read_dataset(database: str = DATABASE) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Stage 1 — read the turns and surveys from the database."""
+    engine = create_engine(f"mysql://ssubrahmanya@localhost/{database}?charset=utf8mb4")
+    try:
+        conversations = pd.read_sql(
+            "SELECT conversation_id, speaker, turn_id, message FROM msgsc", engine
+        )
+        surveys = pd.read_sql(
+            f"SELECT user_id, conversation_id, {', '.join(TRAITS)} FROM surveys", engine
+        )
+    finally:
+        engine.dispose()
     return conversations, surveys
 
 
@@ -92,26 +122,26 @@ def store_conversations(
         for _, turn in turns.iterrows():
             memory.update(
                 conversation_id=str(turn["conversation_id"]),
-                speaker_id=str(turn["speaker_id"]),
-                turn_text=turn["text"],
+                speaker_id=str(turn["speaker"]),
+                turn_text=turn["message"],
             )
 
 
 def gather_turns(conversations: pd.DataFrame, conversation_id) -> dict[str, str]:
     """In-context alternative to ``SummaryMemory.recall``.
 
-    Instead of a summary, return each speaker's full turn history verbatim (turns
-    joined in order) so the assessor sees every turn in the same prompt. The return
-    shape matches ``recall`` — ``{speaker_id: context}`` — so ``assess`` is agnostic
-    to which mechanism produced the context.
+    Instead of a summary, return each speaker's full turn history verbatim (turns joined in
+    order) so the assessor sees every turn in the same prompt. The return shape matches
+    ``recall`` — ``{speaker: context}`` — so ``assess`` is agnostic to which mechanism
+    produced the context.
     """
     turns = conversations[conversations["conversation_id"] == conversation_id]
     turns = turns.sort_values("turn_id")
 
     contexts: dict[str, list[str]] = {}
     for _, turn in turns.iterrows():
-        speaker = str(turn["speaker_id"])
-        contexts.setdefault(speaker, []).append(str(turn["text"]))
+        speaker = str(turn["speaker"])
+        contexts.setdefault(speaker, []).append(str(turn["message"]))
 
     return {speaker: "\n".join(texts) for speaker, texts in contexts.items()}
 
@@ -130,6 +160,7 @@ def assess_personality(
             {
                 "role": "user",
                 "content": prompt.format(
+                    traits=TRAIT_KEYS,
                     speaker=speaker,
                     context=context,
                 ),
@@ -152,9 +183,9 @@ def assess(
 
     """Stage 3 — gather each speaker's context and assess their OCEAN traits.
 
-    ``recall_fn(conversation_id) -> {speaker_id: context}`` supplies the per-speaker
-    context, which is either a rolling summary (``summary`` mode) or the full turn
-    history (``in_context`` mode). ``memory_mode`` also selects the matching prompt.
+    ``recall_fn(conversation_id) -> {speaker: context}`` supplies the per-speaker context,
+    which is either a rolling summary (``summary`` mode) or the full turn history
+    (``in_context`` mode). ``memory_mode`` also selects the matching prompt.
     """
     assessments = []
     for conversation_id in tqdm(sample_conversation_ids, desc="assessing personality traits"):
@@ -173,7 +204,7 @@ def assess(
             assessments.append(
                 {
                     "conversation_id": conversation_id,
-                    "speaker_id": speaker,
+                    "speaker": speaker,
                     **{f"assessed_{trait}": assessment[trait] for trait in TRAITS},
                 }
             )
@@ -186,17 +217,17 @@ def evaluate(assessments: pd.DataFrame, surveys: pd.DataFrame) -> None:
     comparison = pd.merge(
         assessments,
         surveys,
-        left_on=["conversation_id", "speaker_id"],
-        right_on=["conversation_id", "person_id"],
+        left_on=["conversation_id", "speaker"],
+        right_on=["conversation_id", "user_id"],
         how="left",
     )
 
     for trait in TRAITS:
-        valid = comparison[[f"assessed_{trait}", f"personality_{trait}"]].dropna()
+        valid = comparison[[f"assessed_{trait}", trait]].dropna()
         if len(valid) < 2:
             print(f"{trait:18s} Pearson r = n/a  (n={len(valid)}; need >=2 points)")
             continue
-        r, p = pearsonr(valid[f"assessed_{trait}"], valid[f"personality_{trait}"])
+        r, p = pearsonr(valid[f"assessed_{trait}"], valid[trait])
         print(f"{trait:18s} Pearson r = {r:.3f}  (n={len(valid)})  p-value = {p:.3e}")
 
 
@@ -204,10 +235,9 @@ def parse_args() -> argparse.Namespace:
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--dataset",
-        type=Path,
-        required=True,
-        help="Path to the dataset split folder (e.g. ../../data/wassa2024/train).",
+        "--database",
+        default=DATABASE,
+        help="MySQL database holding the CANDOR corpus (default: %(default)s).",
     )
     parser.add_argument(
         "--memory",
@@ -222,13 +252,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--db",
         type=Path,
-        default="wassa2024_memory.db",
+        default="candor_memory.db",
         help="Path to the SummaryMemory SQLite store (recreated fresh on each run).",
     )
     parser.add_argument(
         "--samples",
         type=int,
-        default=1,
+        default=100,
         help="Number of conversations to sample and run the pipeline over.",
     )
     parser.add_argument(
@@ -245,8 +275,8 @@ if __name__ == "__main__":
     args = parse_args()
     rng = np.random.default_rng(args.seed)
 
-    # Stage 1 — read the dataset.
-    conversations, surveys = read_dataset(args.dataset)
+    # Stage 1 — read the dataset from the database.
+    conversations, surveys = read_dataset(args.database)
 
     conversation_ids = conversations["conversation_id"].unique()
     sample_conversation_ids = rng.choice(

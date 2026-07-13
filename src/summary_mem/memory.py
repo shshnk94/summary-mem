@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from openai import OpenAI
 
 from .config import DEFAULT_LLM_MODEL
 from .database import Database
-from .prompts.summarization import SUMMARY_PROMPT, SYSTEM_PROMPT
+from .prompts.summarization import SUMMARY_PROMPT
 
 
 class SummaryMemory:
@@ -47,8 +48,8 @@ class SummaryMemory:
         response = self.chat_client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
+            response_format={"type": "json_object"},
         )
-        return response.choices[0].message.content.strip()
+        return json.loads(response.choices[0].message.content)["summary"].strip()
