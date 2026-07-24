@@ -1,13 +1,38 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 from openai import OpenAI
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_random_exponential
 
 from .config import DEFAULT_LLM_MODEL
 from .database import Database
 from .prompts.summarization import SUMMARY_PROMPT
+
+
+class MalformedSummaryResponse(Exception):
+    """The model's response wasn't the expected {"summary": ...} JSON object.
+
+    Carries the raw response text so it can be inspected — this happens when the
+    model emits a runaway response (e.g. thousands of repeated lines) that gets cut
+    off mid-JSON, rather than a well-formed summary.
+    """
+
+    def __init__(self, content: str, cause: Exception) -> None:
+        super().__init__(f"{cause} ({len(content)} chars)")
+        self.content = content
+
+
+def _log_malformed_response(retry_state) -> None:
+    exc = retry_state.outcome.exception()
+    print(
+        f"summarize() malformed response on attempt {retry_state.attempt_number} "
+        f"({exc}):\n--- response content (first 2000 chars) ---\n{exc.content[:2000]}\n"
+        "--- end response content ---",
+        file=sys.stderr,
+    )
 
 
 class SummaryMemory:
@@ -36,9 +61,20 @@ class SummaryMemory:
     def recall(self, conversation_id: str) -> dict[str, str]:
         return self.db.load_all(conversation_id)
 
+    def recall_all(self, speaker_id: str) -> list[str]:
+        """A speaker's rolling summaries across every conversation they appear in."""
+        return self.db.load_by_speaker(speaker_id)
+
     def close(self) -> None:
         self.db.close()
 
+    @retry(
+        retry=retry_if_exception_type(MalformedSummaryResponse),
+        wait=wait_random_exponential(min=1, max=20),
+        stop=stop_after_attempt(3),
+        before_sleep=_log_malformed_response,
+        reraise=True,
+    )
     def summarize(self, speaker: str, existing: str | None, turn_text: str) -> str:
         prompt = SUMMARY_PROMPT.format(
             speaker=speaker,
@@ -52,4 +88,8 @@ class SummaryMemory:
             ],
             response_format={"type": "json_object"},
         )
-        return json.loads(response.choices[0].message.content)["summary"].strip()
+        content = response.choices[0].message.content
+        try:
+            return json.loads(content)["summary"].strip()
+        except (json.JSONDecodeError, KeyError, TypeError) as exc:
+            raise MalformedSummaryResponse(content, exc) from exc

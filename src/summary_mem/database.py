@@ -38,6 +38,14 @@ class Database:
         rows = self.connection.execute(query).fetchall()
         return {speaker: summary for speaker, summary in rows}
 
+    def load_by_speaker(self, speaker_id: str) -> list[str]:
+        """All of a speaker's summaries, one per conversation, ordered by conversation_id."""
+        rows = self.connection.execute(
+            "SELECT summary FROM summaries WHERE speaker_id = ? ORDER BY conversation_id",
+            (speaker_id,),
+        ).fetchall()
+        return [summary for (summary,) in rows]
+
     def save(self, conversation_id: str, speaker_id: str, summary: str) -> None:
         self.connection.execute(
             "INSERT INTO summaries (conversation_id, speaker_id, summary) "

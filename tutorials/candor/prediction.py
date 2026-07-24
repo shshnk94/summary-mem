@@ -1,23 +1,25 @@
 """CANDOR personality-prediction pipeline.
 
-Runs the three stages from the "Experiments" section of ``candor.ipynb`` end to end:
+Reads turns/surveys from the `candor` MySQL database (Stage 1), stores each turn into a
+``SummaryMemory`` store (Stage 2), then aggregates each speaker's context across their
+sampled conversations and assesses Big Five (OCEAN) traits once per speaker, scoring
+against self-reported surveys with Pearson correlation (Stage 3).
 
-1. Read the turns and surveys from the `candor` MySQL database.
-2. Store both speakers' turns, turn by turn, into a ``SummaryMemory`` store.
-3. Recall each speaker's rolling summary and assess their Big Five (OCEAN) personality
-   traits, then score the assessments against the self-reported surveys with Pearson
-   correlation.
+Turns come from `msgsc` (`conversation_id`, `speaker`, `turn_id`, `message`); self-reports
+from `surveys` (`user_id`, `conversation_id`, `my_*`). CANDOR scores OCEAN on a ~1-5 scale
+and reports **neuroticism** directly, unlike WASSA's reverse-scored "stability".
 
-The corpus is read from the database under its own column names: turns come from `msgsc`
-(`conversation_id`, `speaker`, `turn_id`, `message`) and the self-reports from `surveys`
-(`user_id`, `conversation_id`, `my_*`). CANDOR scores OCEAN on a ~1-5 scale and reports
-**neuroticism** directly, unlike WASSA's reverse-scored "stability".
+A CANDOR participant is surveyed once *per conversation*, so someone with several sampled
+conversations carries several slightly different OCEAN vectors — unlike WASSA, where a
+person's ``personality_*`` columns are identical across every conversation. Assessing once
+per speaker from their aggregated context still matches the target better than once per
+(conversation, speaker) pair; surveys are averaged per person before comparing.
 
-The recall step supports two mechanisms, selected with ``--memory``:
+``--memory`` selects the aggregation mechanism:
 
-* ``summary``    — the default; recall each speaker's rolling ``SummaryMemory`` summary.
-* ``in_context`` — the no-external-memory baseline; feed each speaker's full turn history
-  straight into the assessor, so every turn is present in the same prompt.
+* ``summary``    — default; aggregate each speaker's rolling ``SummaryMemory`` summaries.
+* ``in_context`` — no-external-memory baseline; feed each speaker's full turn history
+  straight into the assessor.
 
 CANDOR is large (~1,656 conversations, ~530k turns) and the summary mechanism makes one LLM
 call per stored turn, so use a bounded ``--samples`` for the initial runs.
@@ -29,12 +31,15 @@ Usage:
 
 from __future__ import annotations
 
+import os
 import argparse
 import json
+import re
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from dotenv import load_dotenv
 from scipy.stats import pearsonr
 from sqlalchemy import create_engine
 from tqdm.auto import tqdm
@@ -42,13 +47,16 @@ from tqdm.auto import tqdm
 from openai import OpenAI
 
 from summary_mem import SummaryMemory
-from summary_mem.clients import get_chat_client
-from summary_mem.config import DEFAULT_LLM_MODEL
+
+load_dotenv()
 
 DATABASE = "candor"
 
-# The survey columns we assess. The LLM is asked for these keys verbatim, and the assessment
-# CSV carries them as assessed_<trait>, so the whole pipeline speaks the database's own names.
+RESULTS_DIR = Path(__file__).parent / "results"
+
+# Survey columns we assess; the assessment CSV carries them as assessed_<trait>, so the
+# pipeline speaks the database's own names throughout, except in the prompt itself (see
+# TRAIT_NAMES) where CANDOR's abbreviations would be unfamiliar to the LLM.
 TRAITS = [
     "my_open",
     "my_conscientious",
@@ -57,39 +65,85 @@ TRAITS = [
     "my_neurotic",
 ]
 
-# What each survey column actually measures — spelled out for the LLM, which cannot be
-# expected to know CANDOR's abbreviations.
-TRAIT_DESCRIPTIONS = {
-    "my_open": "openness to experience",
+# The natural-language trait name the LLM is asked to use as its JSON key, per survey column.
+TRAIT_NAMES = {
+    "my_open": "openness",
     "my_conscientious": "conscientiousness",
     "my_extraversion": "extraversion",
     "my_agreeable": "agreeableness",
     "my_neurotic": "neuroticism",
 }
 
-# One prompt per recall mechanism. The instruction and the framing of {context} differ:
-# 'summary' presents a distilled summary, whereas 'in_context' presents the raw turns.
-PERSONALITY_ASSESSMENT_PROMPTS = {
-    "summary": (
-        "Given a factual summary of a single person built from their side of a conversation, "
-        "assess their Big Five (OCEAN) personality traits. "
-        "Score each trait on a continuous 1-5 scale (1 = very low, 5 = very high). "
-        "Reply with ONLY a JSON object whose keys are exactly:\n{traits}\n\n"
-        "Here is what is known about the speaker {speaker}, summarized from their conversation:\n\n{context}\n\n"
-        "Assess {speaker}'s Big Five personality trait scores (1-5) as JSON."
-    ),
-    "in_context": (
-        "Given the full transcript of a single person's turns from a conversation, "
-        "assess their Big Five (OCEAN) personality traits. "
-        "Score each trait on a continuous 1-5 scale (1 = very low, 5 = very high). "
-        "Reply with ONLY a JSON object whose keys are exactly:\n{traits}\n\n"
-        "Here are all of the turns spoken by {speaker} in the conversation, in order:\n\n{context}\n\n"
-        "Assess {speaker}'s Big Five personality trait scores (1-5) as JSON."
-    ),
-}
+# Shared by both mechanisms: {context} is either a distilled SummaryMemory summary
+# (summary mode) or the speaker's raw turns (in_context mode) — both are a single text
+# blob, so one prompt covers both.
+PERSONALITY_ASSESSMENT_PROMPT = (
+    "Your goal is to assess a speaker's Big Five personality traits, given a summary of "
+    "their side of a conversation or the full transcript of their turns.\n\n"
 
-# The key list handed to the model, each key annotated with what it measures.
-TRAIT_KEYS = "\n".join(f"- {trait} ({TRAIT_DESCRIPTIONS[trait]})" for trait in TRAITS)
+    "The Big Five traits and the facets that define them are:\n"
+
+    "* Openness:\n"
+    "- Imagination: vivid imagination, daydreaming\n"
+    "- Artistic Interests: appreciation for art, beauty, and poetry\n"
+    "- Emotionality: aware of and in touch with one's own feelings\n"
+    "- Adventurousness: preference for novelty and variety over routine\n"
+    "- Intellect: curiosity, enjoyment of abstract or theoretical discussion\n"
+    "- Liberalism: willingness to reconsider one's own beliefs\n"
+
+    "* Conscientiousness:\n"
+    "- Self-Efficacy: confidence in one's own ability to get things done\n"
+    "- Orderliness: preference for structure and organization\n"
+    "- Dutifulness: strict adherence to obligations and ethical principles\n"
+    "- Achievement-Striving: drive, ambition, work ethic\n"
+    "- Self-Discipline: follow-through despite distraction or difficulty\n"
+    "- Cautiousness: thinking carefully before acting rather than acting on impulse\n"
+
+    "* Extraversion:\n"
+    "- Friendliness: warmth, interest in close relationships\n"
+    "- Gregariousness: preference for the company of others, enjoys crowds\n"
+    "- Assertiveness: taking the lead, being direct or forceful\n"
+    "- Activity Level: a fast pace and high energy in daily life\n"
+    "- Excitement-Seeking: craving stimulation and risk, seeking thrills\n"
+    "- Cheerfulness: joy, enthusiasm, optimism\n"
+
+    "* Agreeableness:\n"
+    "- Trust: assuming others are honest and well-intentioned\n"
+    "- Morality: frankness and sincerity, dislike of manipulation or deception\n"
+    "- Altruism: concern for others' welfare, willingness to help\n"
+    "- Cooperation: avoids conflict, defers rather than competes\n"
+    "- Modesty: humble, downplays one's own achievements\n"
+    "- Sympathy: tender-hearted, moved by others' misfortune\n"
+
+    "* Neuroticism (score high when these facets show up a lot):\n"
+    "- Anxiety: worry, tension, fearfulness\n"
+    "- Anger: frustration or irritation in response to setbacks\n"
+    "- Depression: sadness, hopelessness, discouragement\n"
+    "- Self-Consciousness: sensitivity to social judgment, shyness, embarrassment\n"
+    "- Immoderation: difficulty resisting cravings and urges\n"
+    "- Vulnerability: how well they cope with stress or difficulty\n\n"
+
+    "Instructions:\n"
+    "Score each trait on a continuous 1-5 scale (1 = very low, 3 = moderate, 5 = very high), based only on evidence "
+    "present in the input — direct statements, described behavior, or patterns in language and tone. "
+    "Never fabricate or infer evidence the input does not support.\n\n"
+
+    "Respond with a single JSON object:\n"
+    "{{\"openness\": <number>, \"conscientiousness\": <number>, \"extraversion\": <number>, "
+    "\"agreeableness\": <number>, \"neuroticism\": <number>}}\n"
+    "Always include all five keys, even when evidence for a trait is limited — give your best "
+    "estimate rather than omitting the key. Output only the JSON — no markdown formatting, no "
+    "surrounding text.\n\n"
+
+    "Here is what is known about the speaker {speaker}, from a summary or transcript of their conversation:\n\n"
+    "{context}\n\n"
+    "Assess {speaker}'s Big Five personality trait scores (1-5) as JSON."
+)
+
+
+def model_slug(model: str) -> str:
+    """Filesystem-safe tag for a model name, e.g. 'openai/gpt-4o-mini' -> 'gpt4omini'."""
+    return re.sub(r"[^a-zA-Z0-9]", "", model.rsplit("/", 1)[-1])
 
 
 def read_dataset(database: str = DATABASE) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -97,10 +151,14 @@ def read_dataset(database: str = DATABASE) -> tuple[pd.DataFrame, pd.DataFrame]:
     engine = create_engine(f"mysql://ssubrahmanya@localhost/{database}?charset=utf8mb4")
     try:
         conversations = pd.read_sql(
-            "SELECT conversation_id, speaker, turn_id, message FROM msgsc", engine
+            "SELECT conversation_id, speaker, turn_id, message FROM msgsc "
+            "ORDER BY conversation_id, turn_id",
+            engine,
         )
         surveys = pd.read_sql(
-            f"SELECT user_id, conversation_id, {', '.join(TRAITS)} FROM surveys", engine
+            f"SELECT user_id, conversation_id, {', '.join(TRAITS)} FROM surveys "
+            "ORDER BY user_id, conversation_id",
+            engine,
         )
     finally:
         engine.dispose()
@@ -115,7 +173,6 @@ def store_conversations(
     """Stage 2 — store both speakers' turns into summary-mem, turn by turn."""
     for conversation_id in tqdm(sample_conversation_ids, desc="storing conversations"):
 
-        # read all turns for this conversation, sorted by turn_id
         turns = conversations[conversations["conversation_id"] == conversation_id]
         turns = turns.sort_values("turn_id")
 
@@ -127,23 +184,33 @@ def store_conversations(
             )
 
 
-def gather_turns(conversations: pd.DataFrame, conversation_id) -> dict[str, str]:
-    """In-context alternative to ``SummaryMemory.recall``.
+def build_speaker_context(
+    speaker_id: str,
+    memory: SummaryMemory | None,
+    conversations: pd.DataFrame,
+    sample_conversation_ids: np.ndarray,
+) -> str:
+    """Aggregate one speaker's context across every one of their sampled conversations.
 
-    Instead of a summary, return each speaker's full turn history verbatim (turns joined in
-    order) so the assessor sees every turn in the same prompt. The return shape matches
-    ``recall`` — ``{speaker: context}`` — so ``assess`` is agnostic to which mechanism
-    produced the context.
+    Summary mode (``memory`` is a ``SummaryMemory``) recalls its rolling summaries for
+    ``speaker_id``; in_context mode falls back to that speaker's full turn history,
+    read from ``conversations``. Either way, the per-conversation pieces are joined
+    into the single blob ``PERSONALITY_ASSESSMENT_PROMPT`` expects.
     """
-    turns = conversations[conversations["conversation_id"] == conversation_id]
-    turns = turns.sort_values("turn_id")
+    if isinstance(memory, SummaryMemory):
+        contexts = memory.recall_all(speaker_id)
+    else:
+        turns = conversations[
+            conversations["conversation_id"].isin(sample_conversation_ids)
+            & (conversations["speaker"].astype(str) == speaker_id)
+        ]
+        contexts = [
+            "\n".join(group.sort_values("turn_id")["message"].astype(str))
+            for _, group in turns.groupby("conversation_id")
+        ]
 
-    contexts: dict[str, list[str]] = {}
-    for _, turn in turns.iterrows():
-        speaker = str(turn["speaker"])
-        contexts.setdefault(speaker, []).append(str(turn["message"]))
-
-    return {speaker: "\n".join(texts) for speaker, texts in contexts.items()}
+    context = "\n\n".join(f"Conversation {i + 1}:\n{c}" for i, c in enumerate(contexts))
+    return context
 
 
 def assess_personality(
@@ -151,16 +218,13 @@ def assess_personality(
     model: str,
     speaker: str,
     context: str,
-    memory_mode: str,
 ) -> dict[str, float]:
-    prompt = PERSONALITY_ASSESSMENT_PROMPTS[memory_mode]
     response = chat_client.chat.completions.create(
         model=model,
         messages=[
             {
                 "role": "user",
-                "content": prompt.format(
-                    traits=TRAIT_KEYS,
+                "content": PERSONALITY_ASSESSMENT_PROMPT.format(
                     speaker=speaker,
                     context=context,
                 ),
@@ -170,55 +234,22 @@ def assess_personality(
         response_format={"type": "json_object"},
     )
     scores = json.loads(response.choices[0].message.content)
-    return {trait: float(scores[trait]) for trait in TRAITS}
-
-
-def assess(
-    chat_client: OpenAI,
-    model: str,
-    sample_conversation_ids: np.ndarray,
-    recall_fn,
-    memory_mode: str,
-) -> pd.DataFrame:
-
-    """Stage 3 — gather each speaker's context and assess their OCEAN traits.
-
-    ``recall_fn(conversation_id) -> {speaker: context}`` supplies the per-speaker context,
-    which is either a rolling summary (``summary`` mode) or the full turn history
-    (``in_context`` mode). ``memory_mode`` also selects the matching prompt.
-    """
-    assessments = []
-    for conversation_id in tqdm(sample_conversation_ids, desc="assessing personality traits"):
-
-        recalled = recall_fn(conversation_id)
-        for speaker, context in recalled.items():
-
-            assessment = assess_personality(
-                chat_client,
-                model,
-                speaker,
-                context,
-                memory_mode,
-            )
-
-            assessments.append(
-                {
-                    "conversation_id": conversation_id,
-                    "speaker": speaker,
-                    **{f"assessed_{trait}": assessment[trait] for trait in TRAITS},
-                }
-            )
-
-    return pd.DataFrame(assessments)
+    return {trait: float(scores[TRAIT_NAMES[trait]]) for trait in TRAITS}
 
 
 def evaluate(assessments: pd.DataFrame, surveys: pd.DataFrame) -> None:
-    """Score assessments against self-reported surveys (Pearson r per trait)."""
+    """Score assessments against self-reported surveys (Pearson r per trait).
+
+    Surveys are averaged per person (``user_id``) before comparing — a participant
+    is surveyed once per conversation and can carry slightly different OCEAN vectors
+    across conversations.
+    """
+    person_surveys = surveys.groupby("user_id", as_index=False)[TRAITS].mean()
     comparison = pd.merge(
         assessments,
-        surveys,
-        left_on=["conversation_id", "speaker"],
-        right_on=["conversation_id", "user_id"],
+        person_surveys,
+        left_on="speaker_id",
+        right_on="user_id",
         how="left",
     )
 
@@ -262,10 +293,9 @@ def parse_args() -> argparse.Namespace:
         help="Number of conversations to sample and run the pipeline over.",
     )
     parser.add_argument(
-        "--seed",
-        type=int,
-        default=42,
-        help="Random seed for sampling conversations.",
+        "--model",
+        default="openai/gpt-4o-mini",
+        help="LLM model to use (default: %(default)s to openai/gpt-4o-mini).",
     )
     return parser.parse_args()
 
@@ -273,9 +303,8 @@ def parse_args() -> argparse.Namespace:
 if __name__ == "__main__":
 
     args = parse_args()
-    rng = np.random.default_rng(args.seed)
+    rng = np.random.default_rng()
 
-    # Stage 1 — read the dataset from the database.
     conversations, surveys = read_dataset(args.database)
 
     conversation_ids = conversations["conversation_id"].unique()
@@ -284,39 +313,59 @@ if __name__ == "__main__":
         size=min(args.samples, len(conversation_ids)),
         replace=False,
     )
-
-    client = get_chat_client()
-    memory = None
-
-    # Stage 2 — build the per-speaker context for the selected mechanism.
-    if args.memory == "summary":
-
-        # Fresh store so re-running starts from an empty memory.
-        if args.db.exists():
-            args.db.unlink()
-
-        # SummaryMemory is only needed when we actually summarize.
-        memory = SummaryMemory(client, db_path=args.db)
-
-        # summary-mem: store turns so a rolling summary is built, then recall it.
-        store_conversations(memory, conversations, sample_conversation_ids)
-        recall_fn = lambda conversation_id: memory.recall(str(conversation_id))
-    else:  # in_context
-        # no external memory: gather each speaker's full turn history at assessment time.
-        recall_fn = lambda conversation_id: gather_turns(conversations, conversation_id)
-
-    model = memory.model if memory is not None else DEFAULT_LLM_MODEL
-
-    # Stage 3 — assess personality and score it.
-    assessments = assess(
-        client,
-        model,
-        sample_conversation_ids,
-        recall_fn,
-        args.memory,
+    speakers = sorted(
+        conversations.loc[
+            conversations["conversation_id"].isin(sample_conversation_ids), "speaker"
+        ]
+        .astype(str)
+        .unique()
     )
 
-    assessments.to_csv(f"assessments_{args.memory}.csv", index=False)
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=os.environ["OPENROUTER_API_KEY"],
+    )
+    
+    memory = None
+    if args.memory == "summary":
+
+        if args.db.exists():
+            args.db.unlink()  # fresh store so re-running starts from an empty memory
+
+        memory = SummaryMemory(client, db_path=args.db, model=args.model)
+        store_conversations(memory, conversations, sample_conversation_ids)
+
+    assessments = []
+    for speaker in tqdm(speakers, desc="assessing personality traits"):
+
+        # for every speaker, aggregate their context across all sampled conversations
+        context = build_speaker_context(
+            speaker, 
+            memory, 
+            conversations, 
+            sample_conversation_ids
+        )
+
+        # then assess their Big Five traits from that context
+        assessment = assess_personality(
+            client,
+            args.model,
+            speaker,
+            context,
+        )
+
+        assessments.append(
+            {
+                "speaker_id": speaker,
+                **{f"assessed_{trait}": assessment[trait] for trait in TRAITS},
+            }
+        )
+
+    assessments = pd.DataFrame(assessments)
+    RESULTS_DIR.mkdir(exist_ok=True)
+    assessments.to_csv(
+        RESULTS_DIR / f"assessments_{args.memory}_{model_slug(args.model)}.csv", index=False
+    )
     if memory is not None:
         memory.close()
 
