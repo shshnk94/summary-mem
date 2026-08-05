@@ -1,0 +1,1036 @@
+/chronos_data/ssubrahmanya/summary-mem/tutorials/dlatk/dlatk/messageTransformer.py:218: SyntaxWarning: invalid escape sequence '\#'
+  commentLine = re.compile('^\#')
+/chronos_data/ssubrahmanya/summary-mem/tutorials/dlatk/dlatk/outcomeAnalyzer.py:442: SyntaxWarning: invalid escape sequence '\*'
+  blacklist_re.append(re.compile(re.sub('\*',r'\w*',term.lower())))
+/chronos_data/ssubrahmanya/summary-mem/tutorials/dlatk/dlatk/outcomeAnalyzer.py:449: SyntaxWarning: invalid escape sequence '\*'
+  whitelist_re.append(re.compile(re.sub('\*',r'\w*',term.lower())))
+/chronos_data/ssubrahmanya/summary-mem/tutorials/dlatk/dlatk/lib/wordcloud.py:177: SyntaxWarning: invalid escape sequence '\d'
+  nPages = int( re.search("/Count \d*", line).group()[7:] )
+/chronos_data/ssubrahmanya/summary-mem/tutorials/dlatk/dlatk/topicExtractor.py:300: SyntaxWarning: assertion is always true, perhaps remove parentheses?
+  assert(estimate_topics, "pyMallet not installed.")
+TopicExtractor: gensim Mallet wrapper unavailable, using Mallet directly.
+
+-----
+DLATK Interface Initiated: 2026-07-26 19:27:31
+-----
+WARNING: new version of BERT and transformer models starts at layer 1 rather than layer 0. Layer 0 is now the input embedding. For example, if you were using layer 10 for the second to last layer of bert-base that is now considered layer 11.
+WARNING: run --add_sent_tokenized on the message table to avoid tokenizing it every time you generate embeddings
+/chronos_data/ssubrahmanya/summary-mem/.venv/lib/python3.12/site-packages/transformers/utils/hub.py:110: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+Some weights of RobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['pooler.dense.bias', 'pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Done.
+SQL QUERY: DROP TABLE IF EXISTS feat$roberta_ba_meL11con$msg_essays$user_id
+SQL QUERY: CREATE TABLE feat$roberta_ba_meL11con$msg_essays$user_id ( id BIGINT(16) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, group_id varchar(50), feat VARCHAR(12) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin, value DOUBLE, group_norm DOUBLE, KEY `correl_field` (`group_id`), KEY `feature` (`feat`)) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin ENGINE=MYISAM
+finding messages for 120 'user_id's
+SQL QUERY: ALTER TABLE feat$roberta_ba_meL11con$msg_essays$user_id DISABLE KEYS
+WARNING: The table msg_essays does not have: an index on user_id. Consider adding.
+Messages Read: 1.00 k
+Messages Read: 2.00 k
+Messages Read: 3.00 k
+Messages Read: 4.00 k
+Messages Read: 5.00 k
+Messages Read: 6.00 k
+Messages Read: 7.00 k
+Messages Read: 8.00 k
+Messages Read: 9.00 k
+Messages Read: 10.00 k
+Done Reading / Inserting.
+Adding Keys (if goes to keycache, then decrease MAX_TO_DISABLE_KEYS or run myisamchk -n).
+SQL QUERY: ALTER TABLE feat$roberta_ba_meL11con$msg_essays$user_id ENABLE KEYS
+Done
+
+-------
+Settings:
+
+Database - ssubrahmanya
+Corpus - msg_essays
+Group ID - user_id
+Feature table(s) - feat$roberta_ba_meL11con$msg_essays$user_id
+-------
+Interface Runtime: 84.62 seconds
+DLATK exits with success! A good day indeed  ¯\\_(ツ)_/¯.
+
+
+query: SELECT column_type FROM information_schema.columns WHERE table_schema='ssubrahmanya' AND table_name='msg_essays' AND column_name='user_id'
+TopicExtractor: gensim Mallet wrapper unavailable, using Mallet directly.
+
+-----
+DLATK Interface Initiated: 2026-07-26 19:29:02
+-----
+Loading Outcomes and Getting Groups for: {'avg_from_wave_openness_score', 'avg_from_wave_extravert_score', 'avg_from_wave_agreeable_score', 'avg_from_wave_neurotic_score', 'avg_from_wave_conscientious_score'}
+
+
+    ***explicit fold labels specified, not splitting again***
+[number of groups: 120 (10 Folds)]
+
+
+|COMBO: ()|
+===========
+
+= avg_from_wave_agreeable_score (w/ lang.)=
+-------------------------------------------
+Fold 0 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-4.837303797648649)), ('intercept_', np.float64(14.527622222222222)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.0011 (MSE: 5.2088; MAE: 1.7981; mean train mae: 2.0810)
+Fold 1 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-4.973159407865525)), ('intercept_', np.float64(14.437962037037037)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.2157 (MSE: 5.6399; MAE: 2.0181; mean train mae: 1.9457)
+Fold 2 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-5.1528793014849095)), ('intercept_', np.float64(14.506943518518518)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.0485 (MSE: 2.6752; MAE: 1.4201; mean train mae: 1.4280)
+Fold 3 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-5.007842251488852)), ('intercept_', np.float64(14.460647222222223)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.2681 (MSE: 3.5843; MAE: 1.4593; mean train mae: 1.5431)
+Fold 4 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-4.942746284165438)), ('intercept_', np.float64(14.579783333333332)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.1053 (MSE: 7.0208; MAE: 2.1334; mean train mae: 2.4064)
+Fold 5 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-5.151196491021007)), ('intercept_', np.float64(14.487499074074073)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.3225 (MSE: 2.7204; MAE: 1.0582; mean train mae: 1.5250)
+Fold 6 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-4.465384889656863)), ('intercept_', np.float64(14.536110185185183)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.2487 (MSE: 7.9747; MAE: 2.1617; mean train mae: 2.2005)
+Fold 7 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-4.7217486606360985)), ('intercept_', np.float64(14.383332407407407)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.2392 (MSE: 7.0841; MAE: 2.4407; mean train mae: 2.8222)
+Fold 8 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-5.102418800735294)), ('intercept_', np.float64(14.442283333333332)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.0693 (MSE: 3.2099; MAE: 1.4060; mean train mae: 1.3818)
+Fold 9 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-4.7520611384732625)), ('intercept_', np.float64(14.546141666666665)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.1796 (MSE: 5.7165; MAE: 2.0036; mean train mae: 2.0300)
+*Overall R^2:          0.0863
+*Overall FOLDS R^2:    0.0094 (+- 0.0625)
+*R (sqrt R^2):         0.2938
+*Pearson r:            0.3235 (p = 0.00031)
+*Folds Pearson r:      0.3970 (p = 0.30725)
+*Spearman rho:         0.3302 (p = 0.00023)
+*Mean Squared Error:   5.0835
+*Mean Absolute Error:  1.7899
+*Train_Mean MAE:       0.7950
+
+= avg_from_wave_conscientious_score (w/ lang.)=
+-----------------------------------------------
+Fold 0 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-6.034866150321169)), ('intercept_', np.float64(15.385958333333333)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.0749 (MSE: 7.6384; MAE: 2.3341; mean train mae: 2.2694)
+Fold 1 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-6.307001006945006)), ('intercept_', np.float64(15.283797222222221)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.1896 (MSE: 6.4685; MAE: 2.2131; mean train mae: 2.0401)
+Fold 2 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-5.944989405361911)), ('intercept_', np.float64(15.47160648148148)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.1441 (MSE: 10.9140; MAE: 2.4854; mean train mae: 2.4878)
+Fold 3 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-6.527210450918404)), ('intercept_', np.float64(15.208642592592591)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.2010 (MSE: 4.6144; MAE: 1.7641; mean train mae: 1.8818)
+Fold 4 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-6.125545525859534)), ('intercept_', np.float64(15.333334259259257)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.1111 (MSE: 9.6431; MAE: 2.7366; mean train mae: 2.9083)
+Fold 5 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-5.6992852189260725)), ('intercept_', np.float64(15.300309259259258)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.3235 (MSE: 9.7722; MAE: 2.3122; mean train mae: 2.2833)
+Fold 6 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-6.378791570233032)), ('intercept_', np.float64(15.36358148148148)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.0255 (MSE: 5.6456; MAE: 1.9652; mean train mae: 2.1250)
+Fold 7 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-6.558698876697931)), ('intercept_', np.float64(15.29182222222222)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.1427 (MSE: 3.7887; MAE: 1.7532; mean train mae: 1.8055)
+Fold 8 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-6.605691873048568)), ('intercept_', np.float64(15.26034074074074)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.1769 (MSE: 3.3601; MAE: 1.5624; mean train mae: 1.4274)
+Fold 9 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-6.498890366154496)), ('intercept_', np.float64(15.24784074074074)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.2524 (MSE: 4.8916; MAE: 1.9028; mean train mae: 2.0150)
+*Overall R^2:          0.0150
+*Overall FOLDS R^2:    -0.0629 (+- 0.0544)
+*R (sqrt R^2):         0.1226
+*Pearson r:            0.2235 (p = 0.01415)
+*Folds Pearson r:      0.3413 (p = 0.38794)
+*Spearman rho:         0.2045 (p = 0.02505)
+*Mean Squared Error:   6.6737
+*Mean Absolute Error:  2.1029
+*Train_Mean MAE:       0.7926
+
+= avg_from_wave_extravert_score (w/ lang.)=
+-------------------------------------------
+Fold 0 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-10.18005029991919)), ('intercept_', np.float64(13.791205555555553)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.1890 (MSE: 14.4980; MAE: 3.2661; mean train mae: 3.3957)
+Fold 1 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-10.705922327539119)), ('intercept_', np.float64(13.510032407407406)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.3040 (MSE: 11.4610; MAE: 2.9186; mean train mae: 2.2264)
+Fold 2 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-10.56872359260066)), ('intercept_', np.float64(13.685032407407407)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.1248 (MSE: 9.8855; MAE: 2.4425; mean train mae: 2.3711)
+Fold 3 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-10.20814687323685)), ('intercept_', np.float64(13.627933333333333)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.1599 (MSE: 14.7134; MAE: 3.2787; mean train mae: 3.1208)
+Fold 4 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)/chronos_data/ssubrahmanya/summary-mem/tutorials/dlatk/dlatk/regressionPredictor.py:1398: RuntimeWarning: invalid value encountered in sqrt
+  reportStats['R'] = sqrt(reportStats['R2'])
+
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-9.502836638278234)), ('intercept_', np.float64(13.929014814814813)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.8267 (MSE: 21.1029; MAE: 4.0727; mean train mae: 4.1742)
+Fold 5 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-10.649095113815902)), ('intercept_', np.float64(13.501853703703704)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.0258 (MSE: 9.9026; MAE: 2.8155; mean train mae: 2.9302)
+Fold 6 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-11.225701124471822)), ('intercept_', np.float64(13.486421296296296)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.2580 (MSE: 4.6349; MAE: 1.5519; mean train mae: 1.5623)
+Fold 7 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-11.038117409827578)), ('intercept_', np.float64(13.41003148148148)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.5861 (MSE: 6.7823; MAE: 2.0097; mean train mae: 2.2069)
+Fold 8 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-10.71499405635609)), ('intercept_', np.float64(13.415897222222222)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.7995 (MSE: 9.2796; MAE: 2.5075; mean train mae: 2.4907)
+Fold 9 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-10.548181858138864)), ('intercept_', np.float64(13.65926111111111)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.0553 (MSE: 10.2295; MAE: 2.5953; mean train mae: 2.4861)
+*Overall R^2:          -0.0485
+*Overall FOLDS R^2:    -0.3329 (+- 0.0893)
+*R (sqrt R^2):         nan
+*Pearson r:            0.0308 (p = 0.73855)
+*Folds Pearson r:      0.1575 (p = 0.59157)
+*Spearman rho:         0.0353 (p = 0.70175)
+*Mean Squared Error:   11.2490
+*Mean Absolute Error:  2.7458
+*Train_Mean MAE:       0.5640
+
+= avg_from_wave_neurotic_score (w/ lang.)=
+------------------------------------------
+Fold 0 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-7.0897269968806045)), ('intercept_', np.float64(12.18287037037037)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.3761 (MSE: 9.0264; MAE: 2.3996; mean train mae: 3.3306)
+Fold 1 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-7.28351436572838)), ('intercept_', np.float64(12.25895)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.1993 (MSE: 6.2348; MAE: 2.0376; mean train mae: 2.4933)
+Fold 2 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-7.161150991108685)), ('intercept_', np.float64(12.123148148148148)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.3102 (MSE: 7.4142; MAE: 2.1192; mean train mae: 2.7347)
+Fold 3 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-7.025083980996009)), ('intercept_', np.float64(12.058487037037038)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.0571 (MSE: 7.1031; MAE: 2.3631; mean train mae: 2.3499)
+Fold 4 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-6.588651377483736)), ('intercept_', np.float64(12.047530555555557)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.3257 (MSE: 11.4555; MAE: 2.7909; mean train mae: 3.4046)
+Fold 5 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-7.253131694211026)), ('intercept_', np.float64(12.287036111111112)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.3089 (MSE: 6.3634; MAE: 1.9963; mean train mae: 2.7909)
+Fold 6 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-7.296845053711598)), ('intercept_', np.float64(12.216821296296299)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.0336 (MSE: 5.3481; MAE: 1.5663; mean train mae: 1.8417)
+Fold 7 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-6.852219423806914)), ('intercept_', np.float64(12.234568518518518)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.2937 (MSE: 7.9367; MAE: 2.1830; mean train mae: 2.7960)
+Fold 8 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-7.53327742406009)), ('intercept_', np.float64(12.237190740740742)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.2923 (MSE: 3.5443; MAE: 1.5780; mean train mae: 1.9139)
+Fold 9 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-7.366189831261346)), ('intercept_', np.float64(12.193672222222222)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.5135 (MSE: 5.8380; MAE: 1.8694; mean train mae: 3.1712)
+*Overall R^2:          0.3284
+*Overall FOLDS R^2:    0.2596 (+- 0.0495)
+*R (sqrt R^2):         0.5731
+*Pearson r:            0.5741 (p = 0.00000)
+*Folds Pearson r:      0.5832 (p = 0.08983)
+*Spearman rho:         0.5880 (p = 0.00000)
+*Mean Squared Error:   7.0264
+*Mean Absolute Error:  2.0903
+*Train_Mean MAE:       1.4419
+
+= avg_from_wave_openness_score (w/ lang.)=
+------------------------------------------
+Fold 0 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 100000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 100000.0), ('best_score_', np.float64(-7.651217900454918)), ('intercept_', np.float64(13.733025)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.0094 (MSE: 6.3885; MAE: 2.2927; mean train mae: 2.2778)
+Fold 1 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-7.273368080174766)), ('intercept_', np.float64(13.819908333333332)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.2031 (MSE: 10.2044; MAE: 2.5458; mean train mae: 2.3697)
+Fold 2 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 100000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 100000.0), ('best_score_', np.float64(-7.322062998381859)), ('intercept_', np.float64(13.632099074074075)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.1600 (MSE: 9.3316; MAE: 2.3015; mean train mae: 2.3085)
+Fold 3 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 100000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 100000.0), ('best_score_', np.float64(-7.6402928952389635)), ('intercept_', np.float64(13.806945370370372)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.0744 (MSE: 6.5616; MAE: 1.9536; mean train mae: 1.9509)
+Fold 4 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 100000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 100000.0), ('best_score_', np.float64(-7.487379512556318)), ('intercept_', np.float64(13.737655555555556)), ('n_features_in_', 768)]
+  *FOLD R^2: 0.0006 (MSE: 7.9371; MAE: 2.3659; mean train mae: 2.3632)
+Fold 5 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 100000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 100000.0), ('best_score_', np.float64(-7.381168478662935)), ('intercept_', np.float64(13.69290185185185)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.0336 (MSE: 8.7673; MAE: 2.6089; mean train mae: 2.6024)
+Fold 6 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 100000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 100000.0), ('best_score_', np.float64(-7.653946683846982)), ('intercept_', np.float64(13.693673148148148)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.0180 (MSE: 6.5433; MAE: 2.1594; mean train mae: 2.1830)
+Fold 7 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 100000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 100000.0), ('best_score_', np.float64(-7.885708485142852)), ('intercept_', np.float64(13.636574074074074)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.3009 (MSE: 4.5145; MAE: 1.7602; mean train mae: 1.7670)
+Fold 8 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 100000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings: /chronos_data/ssubrahmanya/summary-mem/tutorials/dlatk/dlatk/regressionPredictor.py:1398: RuntimeWarning: invalid value encountered in sqrt
+  reportStats['R'] = sqrt(reportStats['R2'])
+-------
+Settings:
+
+Database - ssubrahmanya
+Corpus - msg_essays
+Group ID - user_id
+Feature table(s) - feat$roberta_ba_meL11con$msg_essays$user_id
+Outcome table - big5_user_id
+Outcome(s) - avg_from_wave_openness_score avg_from_wave_conscientious_score avg_from_wave_extravert_score avg_from_wave_agreeable_score avg_from_wave_neurotic_score
+-------
+Interface Runtime: 21.89 seconds
+DLATK exits with success! A good day indeed  ¯\\_(ツ)_/¯.
+ [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 100000.0), ('best_score_', np.float64(-7.72727467111568)), ('intercept_', np.float64(13.805864814814814)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.0768 (MSE: 5.8231; MAE: 2.0694; mean train mae: 2.0676)
+Fold 9 
+   (feature group: 0): [Initial size: 120]
+ [Train size: 108    Test size: 12]
+ X[0]: (N, features): (108, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (108, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 100000.000000
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (12, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 100000.0), ('best_score_', np.float64(-7.275588832202169)), ('intercept_', np.float64(13.84413611111111)), ('n_features_in_', 768)]
+  *FOLD R^2: -0.1125 (MSE: 9.9663; MAE: 2.3181; mean train mae: 2.3194)
+*Overall R^2:          -0.0285
+*Overall FOLDS R^2:    -0.0988 (+- 0.0292)
+*R (sqrt R^2):         nan
+*Pearson r:            -0.1904 (p = 0.03724)
+*Folds Pearson r:      -0.0053 (p = 0.49466)
+*Spearman rho:         -0.1997 (p = 0.02877)
+*Mean Squared Error:   7.6038
+*Mean Absolute Error:  2.2376
+*Train_Mean MAE:       0.0981
+
+[TEST COMPLETE]
+
+Wrote to: <_io.TextIOWrapper name='/chronos_data/ssubrahmanya/summary-mem/output/big5_user_id_roberta-base_L11_ridgecv.predicted_data.csv' mode='w' encoding='UTF-8'>
+Wrote to: <_io.TextIOWrapper name='/chronos_data/ssubrahmanya/summary-mem/output/big5_user_id_roberta-base_L11_ridgecv.accuracy_data.csv' mode='w' encoding='UTF-8'>
+TopicExtractor: gensim Mallet wrapper unavailable, using Mallet directly.
+
+-----
+DLATK Interface Initiated: 2026-07-26 19:29:28
+-----
+Loading Outcomes and Getting Groups for: {'avg_from_wave_agreeable_score', 'avg_from_wave_openness_score', 'avg_from_wave_neurotic_score', 'avg_from_wave_extravert_score', 'avg_from_wave_conscientious_score'}
+Loading Outcomes and Getting Groups for: {'avg_from_wave_agreeable_score', 'avg_from_wave_openness_score', 'avg_from_wave_neurotic_score', 'avg_from_wave_extravert_score', 'avg_from_wave_conscientious_score'}
+Loading Outcomes and Getting Groups for: {'avg_from_wave_agreeable_score', 'avg_from_wave_openness_score', 'avg_from_wave_neurotic_score', 'avg_from_wave_extravert_score', 'avg_from_wave_conscientious_score'}
+SQL QUERY: DROP TABLE IF EXISTS feat$p_ridg_big5$msg_essays$user_id
+SQL QUERY: CREATE TABLE feat$p_ridg_big5$msg_essays$user_id ( id BIGINT(16) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, group_id varchar(50), feat VARCHAR(33) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin, value DOUBLE, group_norm DOUBLE, KEY `correl_field` (`group_id`), KEY `feature` (`feat`)) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin ENGINE=MYISAM
+-------
+Settings:
+
+Database - ssubrahmanya
+Corpus - msg_essays
+Group ID - user_id
+Feature table(s) - feat$roberta_ba_meL11con$msg_essays$user_id
+Outcome table - big5_user_id
+Outcome(s) - avg_from_wave_openness_score avg_from_wave_conscientious_score avg_from_wave_extravert_score avg_from_wave_agreeable_score avg_from_wave_neurotic_score
+-------
+Interface Runtime: 3.13 seconds
+DLATK exits with success! A good day indeed  ¯\\_(ツ)_/¯.
+
+
+[number of groups: 120]
+
+= avg_from_wave_agreeable_score =
+---------------------------------
+  (feature group: 0)
+   [Train size: 120 ]
+ X[0]: (N, features): (120, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (120, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+
+= avg_from_wave_conscientious_score =
+-------------------------------------
+  (feature group: 0)
+   [Train size: 120 ]
+ X[0]: (N, features): (120, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (120, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+
+= avg_from_wave_extravert_score =
+---------------------------------
+  (feature group: 0)
+   [Train size: 120 ]
+ X[0]: (N, features): (120, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (120, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 10000.000000
+
+= avg_from_wave_neurotic_score =
+--------------------------------
+  (feature group: 0)
+   [Train size: 120 ]
+ X[0]: (N, features): (120, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (120, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 1000.000000
+
+= avg_from_wave_openness_score =
+--------------------------------
+  (feature group: 0)
+   [Train size: 120 ]
+ X[0]: (N, features): (120, 768)
+  [Applying StandardScaler to X[0]: StandardScaler()]
+[COMBINED FEATS (from multiX)] Combined size: (120, 768)
+[COMBINED FEATS: Training regression model: ridgecv]
+model: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05])) 
+  selected alpha: 100000.000000
+
+[TRAINING COMPLETE]
+
+len(chunk) == len(groups): True
+[number of groups: 120]
+ [Aligning current X with training X: feature group: 0]
+  Features Aligned: 768
+ Groups in featureTable: 120 groups that have outcomes: 120
+
+= avg_from_wave_agreeable_score =
+---------------------------------
+  (feature group: 0)
+   [Test size: 120 ]
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (120, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-4.8869030883932245)), ('intercept_', np.float64(14.4908325)), ('n_features_in_', 768)]
+[Done. Evaluation:]
+*R^2 (coefficient of determination): 0.4252
+*R (sqrt R^2):                       0.6521
+*Pearson r:                          0.6848 (0.00000)
+*Spearman rho:                       0.6676 (0.00000)
+*Mean Squared Error:                 3.1978
+*Mean Absolute Error:                1.3895
+
+= avg_from_wave_conscientious_score =
+-------------------------------------
+  (feature group: 0)
+   [Test size: 120 ]
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (120, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-6.287865114848482)), ('intercept_', np.float64(15.314723333333331)), ('n_features_in_', 768)]
+[Done. Evaluation:]
+*R^2 (coefficient of determination): 0.4093
+*R (sqrt R^2):                       0.6398
+*Pearson r:                          0.6844 (0.00000)
+*Spearman rho:                       0.6401 (0.00000)
+*Mean Squared Error:                 4.0022
+*Mean Absolute Error:                1.6281
+
+= avg_from_wave_extravert_score =
+---------------------------------
+  (feature group: 0)
+   [Test size: 120 ]
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (120, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 10000.0), ('best_score_', np.float64(-10.518714923837319)), ('intercept_', np.float64(13.60166833333333)), ('n_features_in_', 768)]
+[Done. Evaluation:]
+*R^2 (coefficient of determination): 0.1189
+*R (sqrt R^2):                       0.3448
+*Pearson r:                          0.4529 (0.00000)
+*Spearman rho:                       0.4534 (0.00000)
+*Mean Squared Error:                 9.4529
+*Mean Absolute Error:                2.4855
+
+= avg_from_wave_neurotic_score =
+--------------------------------
+  (feature group: 0)
+   [Test size: 120 ]
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (120, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 1000.0), ('best_score_', np.float64(-7.032859260582441)), ('intercept_', np.float64(12.184027500000001)), ('n_features_in_', 768)]
+[Done. Evaluation:]
+*R^2 (coefficient of determination): 0.5806
+*R (sqrt R^2):                       0.7620
+*Pearson r:                          0.7920 (0.00000)
+*Spearman rho:                       0.7959 (0.00000)
+*Mean Squared Error:                 4.3877
+*Mean Absolute Error:                1.6505
+
+= avg_from_wave_openness_score =
+--------------------------------
+  (feature group: 0)
+   [Test size: 120 ]
+[PREDICT] applying *existing* standard scaler to X[0]: StandardScaler()
+[PREDICT] combined X shape: (120, 768)
+[PREDICT] regressor: RidgeCV(alphas=array([1.e+03, 1.e-01, 1.e+00, 1.e+01, 1.e+02, 1.e+04, 1.e+05]))
+settings:  [('fit_intercept', True), ('scoring', None), ('cv', None), ('gcv_mode', None), ('store_cv_results', False), ('alpha_per_target', False), ('alpha_', 100000.0), ('best_score_', np.float64(-7.527456632409135)), ('intercept_', np.float64(13.740278333333332)), ('n_features_in_', 768)]
+[Done. Evaluation:]
+*R^2 (coefficient of determination): 0.0124
+*R (sqrt R^2):                       0.1115
+*Pearson r:                          0.3407 (0.00014)
+*Spearman rho:                       0.3490 (0.00009)
+*Mean Squared Error:                 7.3010
+*Mean Absolute Error:                2.1931
+[Prediction Complete]
+ Total Predicted: 120
+query: SELECT column_type FROM information_schema.columns WHERE table_schema='ssubrahmanya' AND table_name='msg_essays' AND column_name='user_id'
+[Inserting Predictions as Feature values for feature: avg_from_wave_agreeable_score]
+   120 feature rows written
+[Inserting Predictions as Feature values for feature: avg_from_wave_conscientious_score]
+   240 feature rows written
+[Inserting Predictions as Feature values for feature: avg_from_wave_extravert_score]
+   360 feature rows written
+[Inserting Predictions as Feature values for feature: avg_from_wave_neurotic_score]
+   480 feature rows written
+[Inserting Predictions as Feature values for feature: avg_from_wave_openness_score]
+   600 feature rows written
+[big5_user_id: 120 labelled users of 120 speaking (0 dropped for missing outcomes), 10 folds]
+[metrics -> /chronos_data/ssubrahmanya/summary-mem/output/big5_user_id_roberta-base_L11_ridgecv.accuracy_data.csv]
+[fold predictions -> /chronos_data/ssubrahmanya/summary-mem/output/big5_user_id_roberta-base_L11_ridgecv.predicted_data.csv]
+
+[predictions -> ssubrahmanya.feat$p_ridg_big5$msg_essays$user_id]

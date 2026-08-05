@@ -1,23 +1,48 @@
 from datetime import datetime
 
-# SUMMARY_PROMPT = (
-#     "You maintain a concise, factual running summary of a speaker's turns in a conversation. "
-#     "Integrate the new turns into the existing summary, "
-#     "keeping as many key details as possible while dropping filler and small talk. "
-#     "Capture the speaker's stable state: their preferences and opinions, personal "
-#     "details and relationships, plans, decisions, and goals, professional "
-#     "details, health and well-being, and any other concrete facts or events they reveal about themselves. "
-#     "Update or correct anything that has changed and keep everything that still holds. "
-#     "Preserve specifics such as proper nouns, exact quantities, and dates or clear temporal references, "
-#     "and never fabricate or infer anything the turns do not support. "
-#     "Write in the third person and return only the updated summary text, with no preamble.\n\n"
-#     "Existing summary of {speaker}:\n{existing}\n\n"
-#     "New turns spoken by {speaker}:\n{turns}\n\n"
-#     "Return the updated summary of {speaker}."
-# )
+# A plain running summary that isn't primed with the BFI questionnaire items —
+# useful as a baseline against QUESTIONNAIRE_SUMMARY to see whether priming on
+# the facets actually improves downstream trait assessment.
+SUMMARY = (
+    # overall goal of the prompt
+    "Your goal is to maintain a concise, factual running summary of a speaker's "
+    "turns in a conversation.\n\n"
+
+    # primes the model on what to capture
+    "Identify the following information to include in the summary. Never "
+    "fabricate or infer anything the turns do not support:\n"
+
+    "1. The speaker's stable state: their preferences and opinions, personal "
+    "details and relationships, plans, decisions, and goals, professional "
+    "details, health and well-being, and any other concrete facts or events "
+    "they reveal about themselves.\n"
+
+    "2. Specifics such as proper nouns, exact quantities, and dates or clear "
+    "temporal references.\n\n"
+
+    # merging instructions
+    "Integrate the new turns into the existing summary. Update or correct "
+    "anything that has changed, and keep everything that still holds while "
+    "dropping filler and small talk.\n\n"
+
+    # keeps the rolling summary from growing without bound as more turns are folded in
+    "Keep the summary under 500 words — a strict maximum, not a target. If "
+    "integrating new turns would push past it, cut the weakest or most "
+    "redundant existing details rather than shortening or dropping the new turns.\n\n"
+
+    # output format instructions
+    "Respond with a single JSON object:\n"
+    "{{\"summary\": <string>}}\n"
+    "- \"summary\": the full updated summary text, written in the third person, with no preamble.\n"
+    "Output only the JSON — no markdown formatting, no surrounding text.\n\n"
+
+    # final instructions for the model to follow
+    "Existing summary of {speaker}:\n{existing}\n\n"
+    "New turns spoken by {speaker}:\n{turns}"
+)
 
 
-SUMMARY_PROMPT = (
+QUESTIONNAIRE_SUMMARY = (
     # overall goal of the prompt
     "Your goal is to maintain a running summary of a speaker's turns in a conversation, "
     "to support a later assessment of their Big Five personality traits.\n\n"

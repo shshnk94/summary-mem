@@ -1,0 +1,556 @@
+storing conversations:   0%|          | 0/247 [00:00<?, ?it/s]storing conversations:   0%|          | 1/247 [00:07<29:21,  7.16s/it]storing conversations:   1%|          | 3/247 [00:13<17:50,  4.39s/it]storing conversations:   2%|▏         | 4/247 [00:22<22:54,  5.66s/it]storing conversations:   2%|▏         | 6/247 [00:23<13:04,  3.26s/it]storing conversations:   3%|▎         | 7/247 [00:24<10:07,  2.53s/it]storing conversations:   3%|▎         | 8/247 [00:36<20:43,  5.20s/it]storing conversations:   4%|▎         | 9/247 [00:39<18:28,  4.66s/it]storing conversations:   4%|▍         | 10/247 [00:47<21:32,  5.46s/it]storing conversations:   4%|▍         | 11/247 [00:52<21:14,  5.40s/it]storing conversations:   5%|▍         | 12/247 [00:59<22:51,  5.83s/it]storing conversations:   5%|▌         | 13/247 [01:03<20:39,  5.30s/it]storing conversations:   6%|▌         | 14/247 [01:15<27:58,  7.20s/it]storing conversations:   6%|▌         | 15/247 [01:21<27:25,  7.09s/it]storing conversations:   6%|▋         | 16/247 [01:25<23:21,  6.07s/it]storing conversations:   7%|▋         | 17/247 [01:26<17:30,  4.57s/it]storing conversations:   7%|▋         | 18/247 [01:29<15:52,  4.16s/it]storing conversations:   8%|▊         | 19/247 [01:35<17:01,  4.48s/it]storing conversations:   8%|▊         | 20/247 [01:35<12:22,  3.27s/it]storing conversations:   9%|▊         | 21/247 [01:37<11:16,  2.99s/it]storing conversations:   9%|▉         | 22/247 [01:43<14:10,  3.78s/it]storing conversations:   9%|▉         | 23/247 [01:45<11:52,  3.18s/it]storing conversations:  10%|▉         | 24/247 [01:45<08:48,  2.37s/it]storing conversations:  10%|█         | 25/247 [01:53<14:21,  3.88s/it]storing conversations:  11%|█         | 26/247 [01:58<16:04,  4.36s/it]storing conversations:  11%|█         | 27/247 [02:03<16:14,  4.43s/it]storing conversations:  11%|█▏        | 28/247 [02:05<13:25,  3.68s/it]storing conversations:  12%|█▏        | 29/247 [02:05<10:15,  2.82s/it]storing conversations:  12%|█▏        | 30/247 [02:15<17:33,  4.85s/it]storing conversations:  13%|█▎        | 31/247 [02:24<21:57,  6.10s/it]storing conversations:  13%|█▎        | 32/247 [02:26<17:16,  4.82s/it]storing conversations:  13%|█▎        | 33/247 [02:26<12:37,  3.54s/it]summarize() malformed response on attempt 1 (Expecting ':' delimiter: line 16447 column 1 (char 52254) (52254 chars)):
+--- response content (first 2000 chars) ---
+{"summary": "711 is currently feeling slightly anxious but does not have traditional hangover symptoms like headache or vomiting. They mention a lack of motivation to engage in activities unless they are 'forcing myself.' Leaving the house offers some relief, though reading the news does not. A recurring theme in 711's thoughts is anticipating the next opportunity to 'have a drink and "
+
+    , "relax" 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+   
+--- end response content ---
+storing conversations:  14%|█▍        | 34/247 [02:36<18:30,  5.22s/it]storing conversations:  14%|█▍        | 35/247 [02:37<14:40,  4.15s/it]storing conversations:  15%|█▍        | 36/247 [03:05<39:51, 11.33s/it]storing conversations:  15%|█▍        | 37/247 [03:10<32:29,  9.28s/it]storing conversations:  15%|█▌        | 38/247 [03:27<40:21, 11.58s/it]storing conversations:  16%|█▌        | 39/247 [03:34<35:37, 10.28s/it]storing conversations:  16%|█▌        | 40/247 [03:43<34:11,  9.91s/it]storing conversations:  17%|█▋        | 41/247 [04:16<57:27, 16.74s/it]storing conversations:  17%|█▋        | 42/247 [04:23<47:45, 13.98s/it]storing conversations:  17%|█▋        | 43/247 [05:00<1:10:30, 20.74s/it]storing conversations:  18%|█▊        | 44/247 [05:02<50:55, 15.05s/it]  storing conversations:  18%|█▊        | 45/247 [05:14<48:25, 14.39s/it]storing conversations:  19%|█▊        | 46/247 [05:22<41:04, 12.26s/it]storing conversations:  19%|█▉        | 47/247 [05:28<35:06, 10.53s/it]storing conversations:  19%|█▉        | 48/247 [05:41<37:14, 11.23s/it]storing conversations:  20%|█▉        | 49/247 [05:59<43:11, 13.09s/it]storing conversations:  20%|██        | 50/247 [05:59<30:33,  9.31s/it]storing conversations:  21%|██        | 51/247 [06:03<25:27,  7.80s/it]storing conversations:  21%|██        | 52/247 [06:04<18:14,  5.61s/it]storing conversations:  21%|██▏       | 53/247 [06:22<30:26,  9.41s/it]storing conversations:  22%|██▏       | 54/247 [06:55<53:15, 16.56s/it]storing conversations:  22%|██▏       | 55/247 [06:58<39:14, 12.26s/it]storing conversations:  23%|██▎       | 56/247 [07:32<59:57, 18.84s/it]storing conversations:  23%|██▎       | 57/247 [07:38<47:46, 15.09s/it]storing conversations:  23%|██▎       | 58/247 [07:52<46:20, 14.71s/it]storing conversations:  24%|██▍       | 59/247 [07:56<35:57, 11.47s/it]storing conversations:  24%|██▍       | 60/247 [08:02<30:27,  9.77s/it]storing conversations:  25%|██▍       | 61/247 [08:12<30:38,  9.89s/it]storing conversations:  25%|██▌       | 62/247 [08:14<23:01,  7.47s/it]storing conversations:  26%|██▌       | 63/247 [08:58<57:02, 18.60s/it]storing conversations:  26%|██▌       | 64/247 [08:59<40:55, 13.42s/it]storing conversations:  26%|██▋       | 65/247 [09:07<34:52, 11.50s/it]storing conversations:  27%|██▋       | 66/247 [09:15<32:00, 10.61s/it]storing conversations:  27%|██▋       | 67/247 [09:23<28:59,  9.66s/it]storing conversations:  28%|██▊       | 68/247 [09:35<31:05, 10.42s/it]storing conversations:  28%|██▊       | 69/247 [09:37<23:22,  7.88s/it]summarize() malformed response on attempt 1 (Unterminated string starting at: line 1 column 13 (char 12) (768 chars)):
+--- response content (first 2000 chars) ---
+{"summary": "1842 finds work to be busy but manageable, noting, 'The people have been nice.' They express a sense of improved well-being: 'I’m doing better than earlier today and actually feel a bit happy.' However, 1842 also conveys a lack of complete satisfaction with their job, wishing for more enjoyment, stating, 'I wish I enjoyed my job every day. Maybe once I move on to something better I will.' This indicates an awareness of their own emotional state, aligning with the Emotionality facet of Openness, and their hope for a better future reflects a desire for improvement and change. Recently, 1842 described their workday as busy but expressed uncertainty about it, saying, 'hopefully it’s not too bad.' They communicated feeling tired from the time change,
+--- end response content ---
+storing conversations:  28%|██▊       | 70/247 [10:06<42:33, 14.42s/it]storing conversations:  29%|██▊       | 71/247 [10:12<34:12, 11.66s/it]storing conversations:  29%|██▉       | 72/247 [10:15<27:09,  9.31s/it]storing conversations:  30%|██▉       | 73/247 [10:18<20:51,  7.19s/it]storing conversations:  30%|██▉       | 74/247 [10:22<17:56,  6.22s/it]storing conversations:  30%|███       | 75/247 [10:28<18:16,  6.38s/it]storing conversations:  31%|███       | 76/247 [10:32<15:27,  5.43s/it]storing conversations:  31%|███       | 77/247 [10:47<23:52,  8.43s/it]storing conversations:  32%|███▏      | 78/247 [11:16<41:13, 14.64s/it]storing conversations:  32%|███▏      | 79/247 [11:24<35:14, 12.59s/it]storing conversations:  32%|███▏      | 80/247 [11:27<27:30,  9.88s/it]storing conversations:  33%|███▎      | 81/247 [11:38<27:31,  9.95s/it]storing conversations:  33%|███▎      | 82/247 [12:09<45:08, 16.41s/it]storing conversations:  34%|███▎      | 83/247 [12:19<39:57, 14.62s/it]storing conversations:  34%|███▍      | 84/247 [12:35<40:44, 15.00s/it]storing conversations:  34%|███▍      | 85/247 [12:46<37:11, 13.78s/it]storing conversations:  35%|███▍      | 86/247 [13:24<55:55, 20.84s/it]storing conversations:  35%|███▌      | 87/247 [13:30<43:57, 16.48s/it]storing conversations:  36%|███▌      | 88/247 [13:31<31:34, 11.92s/it]storing conversations:  36%|███▋      | 90/247 [13:41<22:46,  8.71s/it]storing conversations:  37%|███▋      | 91/247 [13:46<19:57,  7.68s/it]storing conversations:  37%|███▋      | 92/247 [13:52<18:38,  7.21s/it]storing conversations:  38%|███▊      | 93/247 [14:11<26:46, 10.43s/it]storing conversations:  38%|███▊      | 94/247 [14:39<39:38, 15.55s/it]storing conversations:  38%|███▊      | 95/247 [14:41<28:59, 11.44s/it]storing conversations:  39%|███▉      | 96/247 [15:02<35:55, 14.28s/it]storing conversations:  39%|███▉      | 97/247 [15:07<29:10, 11.67s/it]storing conversations:  40%|███▉      | 98/247 [15:16<26:44, 10.77s/it]storing conversations:  40%|████      | 99/247 [15:31<29:43, 12.05s/it]storing conversations:  40%|████      | 100/247 [15:36<24:39, 10.07s/it]storing conversations:  41%|████      | 101/247 [15:45<23:41,  9.73s/it]storing conversations:  41%|████▏     | 102/247 [15:53<22:27,  9.29s/it]storing conversations:  42%|████▏     | 103/247 [16:04<22:58,  9.57s/it]storing conversations:  42%|████▏     | 104/247 [16:08<18:44,  7.86s/it]storing conversations:  43%|████▎     | 105/247 [16:20<22:13,  9.39s/it]storing conversations:  43%|████▎     | 106/247 [16:24<17:39,  7.52s/it]storing conversations:  43%|████▎     | 107/247 [16:27<14:24,  6.17s/it]storing conversations:  44%|████▎     | 108/247 [16:27<10:22,  4.48s/it]storing conversations:  44%|████▍     | 109/247 [16:47<20:53,  9.08s/it]storing conversations:  45%|████▍     | 110/247 [17:25<40:19, 17.66s/it]storing conversations:  45%|████▍     | 111/247 [17:30<31:51, 14.06s/it]storing conversations:  45%|████▌     | 112/247 [17:32<23:31, 10.45s/it]storing conversations:  46%|████▌     | 113/247 [17:46<25:36, 11.47s/it]storing conversations:  46%|████▌     | 114/247 [17:56<24:06, 10.88s/it]storing conversations:  47%|████▋     | 115/247 [18:03<21:48,  9.91s/it]storing conversations:  47%|████▋     | 116/247 [18:15<23:06, 10.58s/it]storing conversations:  47%|████▋     | 117/247 [18:19<18:26,  8.51s/it]storing conversations:  48%|████▊     | 118/247 [18:23<15:29,  7.21s/it]storing conversations:  48%|████▊     | 119/247 [18:56<31:25, 14.73s/it]storing conversations:  49%|████▊     | 120/247 [19:03<26:32, 12.54s/it]storing conversations:  49%|████▉     | 121/247 [19:29<34:49, 16.58s/it]storing conversations:  49%|████▉     | 122/247 [19:32<25:53, 12.43s/it]storing conversations:  50%|████▉     | 123/247 [19:49<28:23, 13.74s/it]storing conversations:  50%|█████     | 124/247 [19:58<25:39, 12.52s/it]storing conversations:  51%|█████     | 125/247 [20:03<20:42, 10.18s/it]storing conversations:  51%|█████     | 126/247 [20:20<24:24, 12.10s/it]storing conversations:  51%|█████▏    | 127/247 [20:24<19:32,  9.77s/it]storing conversations:  52%|█████▏    | 128/247 [20:30<17:01,  8.58s/it]storing conversations:  52%|█████▏    | 129/247 [20:33<13:53,  7.06s/it]storing conversations:  53%|█████▎    | 131/247 [20:36<08:36,  4.45s/it]storing conversations:  53%|█████▎    | 132/247 [21:56<44:33, 23.25s/it]storing conversations:  54%|█████▍    | 133/247 [22:04<36:11, 19.05s/it]storing conversations:  54%|█████▍    | 134/247 [22:09<29:01, 15.41s/it]storing conversations:  55%|█████▍    | 135/247 [22:16<24:16, 13.00s/it]storing conversations:  55%|█████▌    | 136/247 [22:18<18:08,  9.81s/it]storing conversations:  55%|█████▌    | 137/247 [22:26<17:09,  9.36s/it]storing conversations:  56%|█████▌    | 138/247 [22:30<14:05,  7.76s/it]storing conversations:  56%|█████▋    | 139/247 [22:37<13:26,  7.46s/it]storing conversations:  57%|█████▋    | 140/247 [22:52<17:37,  9.88s/it]storing conversations:  57%|█████▋    | 141/247 [22:54<13:20,  7.55s/it]storing conversations:  57%|█████▋    | 142/247 [23:00<12:09,  6.94s/it]storing conversations:  58%|█████▊    | 143/247 [23:04<10:36,  6.12s/it]storing conversations:  58%|█████▊    | 144/247 [23:39<25:16, 14.73s/it]storing conversations:  59%|█████▊    | 145/247 [23:43<19:40, 11.58s/it]storing conversations:  59%|█████▉    | 146/247 [24:04<24:06, 14.32s/it]storing conversations:  60%|█████▉    | 147/247 [24:15<22:29, 13.50s/it]storing conversations:  60%|█████▉    | 148/247 [24:19<17:16, 10.47s/it]storing conversations:  60%|██████    | 149/247 [24:23<14:05,  8.63s/it]storing conversations:  61%|██████    | 150/247 [24:28<12:18,  7.61s/it]storing conversations:  61%|██████    | 151/247 [24:42<15:04,  9.42s/it]storing conversations:  62%|██████▏   | 152/247 [24:43<10:43,  6.77s/it]storing conversations:  62%|██████▏   | 153/247 [24:46<09:01,  5.76s/it]storing conversations:  62%|██████▏   | 154/247 [25:10<17:09, 11.07s/it]storing conversations:  63%|██████▎   | 155/247 [25:10<12:05,  7.88s/it]storing conversations:  63%|██████▎   | 156/247 [25:24<14:37,  9.64s/it]storing conversations:  64%|██████▎   | 157/247 [25:25<10:54,  7.27s/it]storing conversations:  64%|██████▍   | 158/247 [25:31<09:59,  6.74s/it]storing conversations:  64%|██████▍   | 159/247 [25:58<18:40, 12.74s/it]storing conversations:  65%|██████▍   | 160/247 [26:01<14:13,  9.81s/it]storing conversations:  65%|██████▌   | 161/247 [26:05<11:30,  8.03s/it]storing conversations:  66%|██████▌   | 162/247 [26:18<13:49,  9.76s/it]storing conversations:  66%|██████▌   | 163/247 [26:35<16:36, 11.87s/it]storing conversations:  66%|██████▋   | 164/247 [26:37<12:15,  8.87s/it]summarize() malformed response on attempt 1 (Expecting ':' delimiter: line 23221 column 1 (char 62434) (62434 chars)):
+--- response content (first 2000 chars) ---
+{"summary": "859 enjoys relaxing activities such as laying in bed with their cat while watching TV and appreciates the comfort of air conditioning. They expressed a sense of reassurance from signing a contract for a client, indicating a level of confidence in their work ('which was reassuring'). Recently, 859 mentioned waking up, showering, getting dressed cute, and going out on an adventure by themselves, which indicates a preference for novelty and variety ('I bought myself a purse I'd been wanting for a while and I'm really excited about it!'). This reflects both an adventurous spirit and excitement for personal purchases. They had a nice day planned but canceled it, showing a willingness to adapt to changing circumstances. 859 expressed a desire to head out to Stoney Clover and mentioned wanting a Fanny pack despite acknowledging it was an expensive purchase ('I really want the Fanny pack even though I have no business spending $300 on a small purse'). This shows both a craving for novelty and the acceptance of spending as a transient aspect of life ('Oh well, money comes and goes right?'). 859 noted feeling 'a little bored' today and intended to do some things but never left the house. They recognize the need for relaxation but simultaneously express dissatisfaction with their level of socializing, stating, 'I hate how little socializing I do,' and a desire for new friends, suggesting an awareness of their social needs and a yearning for connection. Recently, 859 mentioned feeling exhausted despite sleeping nearly 12 hours, indicating possible chronic fatigue or stress ('Not sure why but I feel exhausted'). They are uncertain about whether this fatigue is due to being chronically behind on sleep or something else, which shows a reflective mindset about their wellbeing. In a recent turn, 859 said they had 'a really nice day' and 'enjoyed being out and being cute,' indicating a positive emotional state. They mentioned not "
+
+
+
+," 859 expressed a hint of reluctanc
+--- end response content ---
+storing conversations:  67%|██████▋   | 165/247 [27:17<24:42, 18.08s/it]storing conversations:  67%|██████▋   | 166/247 [27:21<19:00, 14.08s/it]storing conversations:  68%|██████▊   | 167/247 [27:49<24:23, 18.30s/it]storing conversations:  68%|██████▊   | 168/247 [27:59<20:40, 15.71s/it]storing conversations:  68%|██████▊   | 169/247 [28:00<14:26, 11.11s/it]storing conversations:  69%|██████▉   | 170/247 [28:08<13:24, 10.45s/it]storing conversations:  69%|██████▉   | 171/247 [28:10<09:48,  7.75s/it]storing conversations:  70%|██████▉   | 172/247 [28:24<12:10,  9.74s/it]storing conversations:  70%|███████   | 173/247 [28:34<11:56,  9.69s/it]storing conversations:  70%|███████   | 174/247 [28:43<11:40,  9.60s/it]storing conversations:  71%|███████   | 175/247 [29:06<16:18, 13.60s/it]storing conversations:  71%|███████▏  | 176/247 [29:14<14:01, 11.86s/it]storing conversations:  72%|███████▏  | 177/247 [29:30<15:12, 13.03s/it]storing conversations:  72%|███████▏  | 178/247 [30:00<20:51, 18.14s/it]storing conversations:  72%|███████▏  | 179/247 [30:05<16:02, 14.16s/it]storing conversations:  73%|███████▎  | 180/247 [30:25<17:47, 15.94s/it]storing conversations:  73%|███████▎  | 181/247 [30:28<13:27, 12.24s/it]storing conversations:  74%|███████▎  | 182/247 [30:33<10:49,  9.99s/it]storing conversations:  74%|███████▍  | 183/247 [31:02<16:50, 15.79s/it]storing conversations:  74%|███████▍  | 184/247 [31:11<14:27, 13.78s/it]storing conversations:  75%|███████▍  | 185/247 [31:20<12:38, 12.23s/it]storing conversations:  75%|███████▌  | 186/247 [31:27<10:46, 10.59s/it]storing conversations:  76%|███████▌  | 187/247 [31:29<08:05,  8.09s/it]storing conversations:  76%|███████▌  | 188/247 [31:35<07:20,  7.47s/it]storing conversations:  77%|███████▋  | 189/247 [32:03<13:08, 13.59s/it]storing conversations:  77%|███████▋  | 190/247 [32:21<14:14, 14.99s/it]storing conversations:  77%|███████▋  | 191/247 [32:38<14:27, 15.48s/it]storing conversations:  78%|███████▊  | 192/247 [32:38<10:02, 10.96s/it]storing conversations:  78%|███████▊  | 193/247 [32:42<07:48,  8.68s/it]storing conversations:  79%|███████▊  | 194/247 [32:46<06:37,  7.50s/it]storing conversations:  79%|███████▉  | 195/247 [32:49<05:18,  6.12s/it]storing conversations:  79%|███████▉  | 196/247 [33:02<06:52,  8.08s/it]storing conversations:  80%|███████▉  | 197/247 [33:23<09:51, 11.83s/it]storing conversations:  80%|████████  | 198/247 [33:31<08:52, 10.88s/it]storing conversations:  81%|████████  | 199/247 [33:45<09:17, 11.61s/it]storing conversations:  81%|████████  | 200/247 [34:16<13:48, 17.63s/it]storing conversations:  81%|████████▏ | 201/247 [34:24<11:21, 14.82s/it]storing conversations:  82%|████████▏ | 202/247 [34:37<10:39, 14.20s/it]storing conversations:  82%|████████▏ | 203/247 [34:51<10:24, 14.19s/it]storing conversations:  83%|████████▎ | 204/247 [34:52<07:08,  9.97s/it]storing conversations:  83%|████████▎ | 205/247 [35:00<06:40,  9.53s/it]storing conversations:  83%|████████▎ | 206/247 [35:08<06:12,  9.07s/it]storing conversations:  84%|████████▍ | 207/247 [35:25<07:42, 11.57s/it]storing conversations:  84%|████████▍ | 208/247 [35:49<09:48, 15.09s/it]storing conversations:  85%|████████▍ | 209/247 [35:55<07:50, 12.38s/it]storing conversations:  85%|████████▌ | 210/247 [35:55<05:25,  8.80s/it]storing conversations:  85%|████████▌ | 211/247 [36:32<10:18, 17.17s/it]storing conversations:  86%|████████▌ | 212/247 [36:36<07:47, 13.37s/it]storing conversations:  86%|████████▌ | 213/247 [36:37<05:26,  9.61s/it]storing conversations:  87%|████████▋ | 214/247 [36:42<04:26,  8.09s/it]storing conversations:  87%|████████▋ | 215/247 [36:49<04:11,  7.85s/it]storing conversations:  87%|████████▋ | 216/247 [37:17<07:06, 13.75s/it]storing conversations:  88%|████████▊ | 217/247 [37:20<05:21, 10.72s/it]storing conversations:  88%|████████▊ | 218/247 [37:33<05:26, 11.25s/it]storing conversations:  89%|████████▊ | 219/247 [37:47<05:37, 12.04s/it]storing conversations:  89%|████████▉ | 220/247 [37:52<04:33, 10.15s/it]storing conversations:  89%|████████▉ | 221/247 [38:24<07:08, 16.47s/it]storing conversations:  90%|████████▉ | 222/247 [38:44<07:22, 17.70s/it]storing conversations:  90%|█████████ | 223/247 [38:48<05:27, 13.63s/it]storing conversations:  91%|█████████ | 224/247 [38:56<04:30, 11.77s/it]storing conversations:  91%|█████████ | 225/247 [39:07<04:12, 11.49s/it]storing conversations:  91%|█████████▏| 226/247 [39:24<04:36, 13.15s/it]storing conversations:  92%|█████████▏| 227/247 [39:25<03:12,  9.62s/it]storing conversations:  92%|█████████▏| 228/247 [39:30<02:34,  8.12s/it]storing conversations:  93%|█████████▎| 229/247 [39:44<03:00, 10.05s/it]storing conversations:  93%|█████████▎| 230/247 [40:09<04:08, 14.63s/it]storing conversations:  94%|█████████▎| 231/247 [40:35<04:44, 17.77s/it]storing conversations:  94%|█████████▍| 232/247 [41:06<05:27, 21.86s/it]storing conversations:  94%|█████████▍| 233/247 [41:17<04:22, 18.73s/it]storing conversations:  95%|█████████▍| 234/247 [41:21<03:05, 14.28s/it]storing conversations:  95%|█████████▌| 235/247 [41:27<02:20, 11.72s/it]storing conversations:  96%|█████████▌| 236/247 [41:30<01:38,  8.95s/it]storing conversations:  96%|█████████▌| 237/247 [41:40<01:33,  9.32s/it]storing conversations:  96%|█████████▋| 238/247 [41:41<01:03,  7.03s/it]storing conversations:  97%|█████████▋| 239/247 [41:54<01:10,  8.84s/it]storing conversations:  97%|█████████▋| 240/247 [42:45<02:28, 21.26s/it]storing conversations:  98%|█████████▊| 241/247 [43:01<01:59, 19.92s/it]storing conversations:  98%|█████████▊| 242/247 [43:03<01:11, 14.25s/it]storing conversations:  98%|█████████▊| 243/247 [43:14<00:53, 13.36s/it]storing conversations:  99%|█████████▉| 244/247 [43:19<00:32, 10.84s/it]storing conversations:  99%|█████████▉| 245/247 [43:33<00:23, 11.96s/it]storing conversations: 100%|█████████▉| 246/247 [43:45<00:11, 11.95s/it]storing conversations: 100%|██████████| 247/247 [43:56<00:00, 11.61s/it]storing conversations: 100%|██████████| 247/247 [43:56<00:00, 10.67s/it]
+assessing personality traits:   0%|          | 0/100 [00:00<?, ?it/s]assessing personality traits:   1%|          | 1/100 [00:00<01:35,  1.04it/s]assessing personality traits:   2%|▏         | 2/100 [00:02<01:56,  1.19s/it]assessing personality traits:   3%|▎         | 3/100 [00:08<05:20,  3.31s/it]assessing personality traits:   4%|▍         | 4/100 [00:09<03:53,  2.43s/it]assessing personality traits:   5%|▌         | 5/100 [00:10<03:13,  2.04s/it]assessing personality traits:   6%|▌         | 6/100 [00:11<02:27,  1.57s/it]assessing personality traits:   7%|▋         | 7/100 [00:11<02:01,  1.30s/it]assessing personality traits:   8%|▊         | 8/100 [00:13<01:54,  1.24s/it]assessing personality traits:   9%|▉         | 9/100 [00:14<01:56,  1.28s/it]assessing personality traits:  10%|█         | 10/100 [00:15<01:55,  1.29s/it]assessing personality traits:  11%|█         | 11/100 [00:16<01:49,  1.23s/it]assessing personality traits:  12%|█▏        | 12/100 [00:18<02:01,  1.38s/it]assessing personality traits:  13%|█▎        | 13/100 [00:19<01:45,  1.21s/it]assessing personality traits:  14%|█▍        | 14/100 [00:20<01:53,  1.32s/it]assessing personality traits:  15%|█▌        | 15/100 [00:23<02:20,  1.65s/it]assessing personality traits:  16%|█▌        | 16/100 [00:24<02:09,  1.55s/it]assessing personality traits:  17%|█▋        | 17/100 [00:26<02:15,  1.63s/it]assessing personality traits:  18%|█▊        | 18/100 [00:28<02:10,  1.59s/it]assessing personality traits:  19%|█▉        | 19/100 [00:28<01:50,  1.37s/it]assessing personality traits:  20%|██        | 20/100 [00:30<01:48,  1.35s/it]assessing personality traits:  21%|██        | 21/100 [00:31<01:46,  1.35s/it]assessing personality traits:  22%|██▏       | 22/100 [00:32<01:33,  1.20s/it]assessing personality traits:  23%|██▎       | 23/100 [00:33<01:34,  1.23s/it]assessing personality traits:  24%|██▍       | 24/100 [00:35<01:47,  1.42s/it]assessing personality traits:  25%|██▌       | 25/100 [00:36<01:43,  1.39s/it]assessing personality traits:  26%|██▌       | 26/100 [00:37<01:27,  1.18s/it]assessing personality traits:  27%|██▋       | 27/100 [00:38<01:28,  1.22s/it]assessing personality traits:  28%|██▊       | 28/100 [00:40<01:30,  1.25s/it]assessing personality traits:  29%|██▉       | 29/100 [00:41<01:34,  1.33s/it]assessing personality traits:  30%|███       | 30/100 [00:43<01:39,  1.42s/it]assessing personality traits:  31%|███       | 31/100 [00:44<01:36,  1.39s/it]assessing personality traits:  32%|███▏      | 32/100 [00:45<01:21,  1.20s/it]assessing personality traits:  33%|███▎      | 33/100 [00:47<01:34,  1.41s/it]assessing personality traits:  34%|███▍      | 34/100 [00:48<01:32,  1.41s/it]assessing personality traits:  35%|███▌      | 35/100 [00:50<01:42,  1.57s/it]assessing personality traits:  36%|███▌      | 36/100 [00:52<01:46,  1.67s/it]assessing personality traits:  37%|███▋      | 37/100 [00:53<01:28,  1.40s/it]assessing personality traits:  38%|███▊      | 38/100 [00:54<01:14,  1.20s/it]assessing personality traits:  39%|███▉      | 39/100 [00:55<01:21,  1.34s/it]assessing personality traits:  40%|████      | 40/100 [00:57<01:31,  1.52s/it]assessing personality traits:  41%|████      | 41/100 [00:59<01:33,  1.58s/it]assessing personality traits:  42%|████▏     | 42/100 [01:00<01:26,  1.48s/it]assessing personality traits:  43%|████▎     | 43/100 [01:01<01:21,  1.43s/it]assessing personality traits:  44%|████▍     | 44/100 [01:03<01:21,  1.46s/it]assessing personality traits:  45%|████▌     | 45/100 [01:05<01:21,  1.49s/it]assessing personality traits:  46%|████▌     | 46/100 [01:05<01:10,  1.31s/it]assessing personality traits:  47%|████▋     | 47/100 [01:07<01:15,  1.43s/it]assessing personality traits:  48%|████▊     | 48/100 [01:08<01:10,  1.36s/it]assessing personality traits:  49%|████▉     | 49/100 [01:10<01:16,  1.50s/it]assessing personality traits:  50%|█████     | 50/100 [01:12<01:18,  1.57s/it]assessing personality traits:  51%|█████     | 51/100 [01:14<01:31,  1.87s/it]assessing personality traits:  52%|█████▏    | 52/100 [01:17<01:40,  2.10s/it]assessing personality traits:  53%|█████▎    | 53/100 [01:19<01:40,  2.13s/it]assessing personality traits:  54%|█████▍    | 54/100 [01:21<01:36,  2.10s/it]assessing personality traits:  55%|█████▌    | 55/100 [01:23<01:31,  2.04s/it]assessing personality traits:  56%|█████▌    | 56/100 [01:25<01:22,  1.88s/it]assessing personality traits:  57%|█████▋    | 57/100 [01:26<01:10,  1.63s/it]assessing personality traits:  58%|█████▊    | 58/100 [01:28<01:14,  1.78s/it]assessing personality traits:  59%|█████▉    | 59/100 [01:30<01:15,  1.83s/it]assessing personality traits:  60%|██████    | 60/100 [01:32<01:14,  1.87s/it]assessing personality traits:  61%|██████    | 61/100 [01:34<01:12,  1.86s/it]assessing personality traits:  62%|██████▏   | 62/100 [01:35<01:08,  1.81s/it]assessing personality traits:  63%|██████▎   | 63/100 [01:37<01:09,  1.88s/it]assessing personality traits:  64%|██████▍   | 64/100 [01:40<01:16,  2.13s/it]assessing personality traits:  65%|██████▌   | 65/100 [01:42<01:08,  1.96s/it]assessing personality traits:  66%|██████▌   | 66/100 [01:43<01:01,  1.81s/it]assessing personality traits:  67%|██████▋   | 67/100 [01:46<01:07,  2.06s/it]assessing personality traits:  68%|██████▊   | 68/100 [01:49<01:12,  2.26s/it]assessing personality traits:  69%|██████▉   | 69/100 [01:50<01:00,  1.94s/it]assessing personality traits:  70%|███████   | 70/100 [01:51<00:52,  1.76s/it]assessing personality traits:  71%|███████   | 71/100 [01:52<00:43,  1.50s/it]assessing personality traits:  72%|███████▏  | 72/100 [01:54<00:45,  1.64s/it]assessing personality traits:  73%|███████▎  | 73/100 [01:56<00:47,  1.78s/it]assessing personality traits:  74%|███████▍  | 74/100 [01:58<00:44,  1.70s/it]assessing personality traits:  75%|███████▌  | 75/100 [01:59<00:43,  1.72s/it]assessing personality traits:  76%|███████▌  | 76/100 [02:01<00:38,  1.60s/it]assessing personality traits:  77%|███████▋  | 77/100 [02:03<00:43,  1.88s/it]assessing personality traits:  78%|███████▊  | 78/100 [02:05<00:38,  1.74s/it]assessing personality traits:  79%|███████▉  | 79/100 [02:07<00:38,  1.84s/it]assessing personality traits:  80%|████████  | 80/100 [02:09<00:41,  2.06s/it]assessing personality traits:  81%|████████  | 81/100 [02:12<00:41,  2.20s/it]assessing personality traits:  82%|████████▏ | 82/100 [02:14<00:40,  2.27s/it]assessing personality traits:  83%|████████▎ | 83/100 [02:16<00:36,  2.13s/it]assessing personality traits:  84%|████████▍ | 84/100 [02:18<00:32,  2.05s/it]assessing personality traits:  85%|████████▌ | 85/100 [02:19<00:26,  1.78s/it]assessing personality traits:  86%|████████▌ | 86/100 [02:21<00:25,  1.79s/it]assessing personality traits:  87%|████████▋ | 87/100 [02:23<00:24,  1.88s/it]assessing personality traits:  88%|████████▊ | 88/100 [02:25<00:22,  1.89s/it]assessing personality traits:  89%|████████▉ | 89/100 [02:26<00:18,  1.71s/it]assessing personality traits:  90%|█████████ | 90/100 [02:27<00:16,  1.60s/it]assessing personality traits:  91%|█████████ | 91/100 [02:29<00:13,  1.55s/it]assessing personality traits:  92%|█████████▏| 92/100 [02:30<00:11,  1.43s/it]assessing personality traits:  93%|█████████▎| 93/100 [02:32<00:11,  1.71s/it]assessing personality traits:  94%|█████████▍| 94/100 [02:33<00:08,  1.42s/it]assessing personality traits:  95%|█████████▌| 95/100 [02:34<00:06,  1.33s/it]assessing personality traits:  96%|█████████▌| 96/100 [02:36<00:05,  1.32s/it]assessing personality traits:  97%|█████████▋| 97/100 [02:37<00:03,  1.30s/it]assessing personality traits:  98%|█████████▊| 98/100 [02:38<00:02,  1.33s/it]assessing personality traits:  99%|█████████▉| 99/100 [02:40<00:01,  1.55s/it]assessing personality traits: 100%|██████████| 100/100 [02:41<00:00,  1.35s/it]assessing personality traits: 100%|██████████| 100/100 [02:41<00:00,  1.62s/it]
+openness           (openness_score) Pearson r = 0.086  (n=100)  p-value = 3.929e-01
+conscientiousness  (conscientious_score) Pearson r = 0.261  (n=100)  p-value = 8.829e-03
+extraversion       (extravert_score) Pearson r = 0.328  (n=100)  p-value = 8.532e-04
+agreeableness      (agreeable_score) Pearson r = 0.196  (n=100)  p-value = 5.072e-02
+neuroticism        (neurotic_score) Pearson r = 0.533  (n=100)  p-value = 1.115e-08

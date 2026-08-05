@@ -49,7 +49,7 @@ import tqdm
 from openai import OpenAI
 
 from .clients import get_chat_client
-from .config import DEFAULT_LLM_MODEL
+from .config import DEFAULT_DB_NAME, DEFAULT_LLM_MODEL
 from .memory import SummaryMemory
 from .prompts.qa import (
     JUDGE_SYSTEM_PROMPT,
@@ -85,12 +85,13 @@ class MemoryEvaluator:
         conversation_id: str = "eval",
         model: str = DEFAULT_LLM_MODEL,
         memory: SummaryMemory | None = None,
-        db_path: str | Path | None = None,
+        db_name: str = DEFAULT_DB_NAME,
+        namespace: str = "longmemeval",
     ) -> None:
         self.chat_client = chat_client
         self.conversation_id = conversation_id
         self.model = model
-        self.memory = memory or SummaryMemory(chat_client, model=model, db_path=db_path)
+        self.memory = memory or SummaryMemory(chat_client, model=model, db_name=db_name, namespace=namespace)
 
     # -- indexing -----------------------------------------------------------
 
@@ -198,6 +199,8 @@ def evaluate_dataset(
     chat_client: OpenAI | None = None,
     model: str = DEFAULT_LLM_MODEL,
     limit: int | None = None,
+    db_name: str = DEFAULT_DB_NAME,
+    namespace: str = "longmemeval",
 ) -> dict:
     """Run the full LongMemEval-format dataset and report accuracy.
 
@@ -220,6 +223,8 @@ def evaluate_dataset(
             chat_client,
             conversation_id=inst.get("question_id", "eval"),
             model=model,
+            db_name=db_name,
+            namespace=namespace,
         )
         try:
             evaluator.index(inst["haystack_sessions"], inst.get("haystack_dates"))
@@ -288,13 +293,26 @@ def main() -> None:
     parser.add_argument("--model", default=DEFAULT_LLM_MODEL, help="LLM for answering, summarizing, and judging")
     parser.add_argument("--limit", type=int, default=None, help="evaluate only the first N instances")
     parser.add_argument("--out", type=Path, default=None, help="write per-question records as JSON here")
+    parser.add_argument("--db-name", default=DEFAULT_DB_NAME, help="MySQL database to store summaries in")
+    parser.add_argument(
+        "--namespace",
+        default="longmemeval",
+        help="Scopes summaries in the shared MySQL table to this eval run, so they can't collide "
+        "with an unrelated pipeline/corpus writing to the same db_name/table (default: %(default)s).",
+    )
     args = parser.parse_args()
 
     chat_client = get_chat_client()
 
     if args.data is None:
         # Quick start: index the toy haystack, ask, grade.
-        ev = MemoryEvaluator(chat_client, conversation_id="toy", model=args.model)
+        ev = MemoryEvaluator(
+            chat_client,
+            conversation_id="toy",
+            model=args.model,
+            db_name=args.db_name,
+            namespace=args.namespace,
+        )
         try:
             ev.index(_TOY_SESSIONS)
             result = ev.rag_qa(_TOY_QUESTION, gold_answer=_TOY_ANSWER)
@@ -309,7 +327,14 @@ def main() -> None:
         print(f"correct: {result.correct}")
         return
 
-    report = evaluate_dataset(args.data, chat_client=chat_client, model=args.model, limit=args.limit)
+    report = evaluate_dataset(
+        args.data,
+        chat_client=chat_client,
+        model=args.model,
+        limit=args.limit,
+        db_name=args.db_name,
+        namespace=args.namespace,
+    )
     print(f"\noverall accuracy: {report['accuracy']:.3f}  (n={report['n']})")
     for qtype, stats in report["by_question_type"].items():
         print(f"  {qtype:28s} {stats['accuracy']:.3f}  (n={stats['n']})")

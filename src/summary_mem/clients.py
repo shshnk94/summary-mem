@@ -12,12 +12,12 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from .config import OPENROUTER_BASE_URL
+from .config import OPENROUTER_BASE_URL, VLLM_BASE_URL
 
 load_dotenv()
 
-def get_chat_client(base_url: str = OPENROUTER_BASE_URL) -> OpenAI:
-    """OpenAI client for chat/summarization calls (OpenRouter by default)."""
+def get_chat_client(base_url: str = VLLM_BASE_URL) -> OpenAI:
+    """OpenAI client for chat/summarization calls (local vLLM server by default)."""
     return OpenAI(
         base_url=base_url,
         api_key=os.environ["OPENROUTER_API_KEY"],
