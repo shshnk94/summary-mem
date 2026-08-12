@@ -55,10 +55,24 @@ torch = { index = "pytorch-cu118" }
 torchaudio = { index = "pytorch-cu118" }
 torchvision = { index = "pytorch-cu118" }
 vllm = { url = "https://github.com/vllm-project/vllm/releases/download/v0.10.1/vllm-0.10.1+cu118-cp38-abi3-manylinux1_x86_64.whl" }
+raptor = { workspace = true }
+
+[tool.uv.workspace]
+members = [
+    "vendor/raptor",
+]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+mem0 = [
+    "mem0ai>=2.0.17",
+]
+raptor = [
+    "raptor",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/summary_mem"]

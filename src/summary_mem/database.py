@@ -2,15 +2,19 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from sqlalchemy import Column, MetaData, String, Table, Text, create_engine, select
-from sqlalchemy.dialects.mysql import insert as mysql_insert
+from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
-
-from .config import DEFAULT_DB_NAME
 
 # Matches dlatk's convention: MySQL credentials live in ~/.my.cnf, so callers
 # only ever need to name a database, not host/user/password.
 MYSQL_CONFIG_FILE = Path.home() / ".my.cnf"
+
+
+def _make_engine(db_name: str) -> Engine:
+    connect_args = {}
+    if MYSQL_CONFIG_FILE.is_file():
+        connect_args["read_default_file"] = str(MYSQL_CONFIG_FILE)
+    return create_engine(f"mysql+mysqldb:///{db_name}", connect_args=connect_args)
 
 
 class Database:
@@ -22,7 +26,7 @@ class Database:
 
     def __init__(
         self,
-        db_name: str = DEFAULT_DB_NAME,
+        db_name: str = "ssubrahmanya",
         table_name: str = "summaries",
         *,
         namespace: str,
@@ -30,79 +34,134 @@ class Database:
         self.db_name = db_name
         self.table_name = table_name
         self.namespace = namespace
-        self.engine = self._make_engine(db_name)
-        self.metadata = MetaData()
-        self.summaries = self._prepare_table()
+        self.engine = _make_engine(db_name)
+        self._create_table()
 
-    def _make_engine(self, db_name: str) -> Engine:
-        connect_args = {}
-        if MYSQL_CONFIG_FILE.is_file():
-            connect_args["read_default_file"] = str(MYSQL_CONFIG_FILE)
-        return create_engine(f"mysql+mysqldb:///{db_name}", connect_args=connect_args)
-
-    def _prepare_table(self) -> Table:
+    def _create_table(self) -> None:
         # Explicit InnoDB: the server default (MyISAM) caps composite-key
         # length at 1000 bytes, too short for three utf8mb4 VARCHAR(255) columns.
         # namespace scopes the key so unrelated pipelines/corpora sharing this
         # table (same db_name/table_name) can't collide on conversation_id/speaker_id.
-        table = Table(
-            self.table_name,
-            self.metadata,
-            Column("namespace", String(255), primary_key=True),
-            Column("conversation_id", String(255), primary_key=True),
-            Column("speaker_id", String(255), primary_key=True),
-            Column("summary", Text, nullable=False),
-            mysql_engine="InnoDB",
+        query = (
+            f"CREATE TABLE IF NOT EXISTS {self.table_name} ("
+            f"namespace VARCHAR(255) NOT NULL, "
+            f"conversation_id VARCHAR(255) NOT NULL, "
+            f"speaker_id VARCHAR(255) NOT NULL, "
+            f"summary TEXT NOT NULL, "
+            f"PRIMARY KEY (namespace, conversation_id, speaker_id)"
+            f") ENGINE=InnoDB"
         )
-        self.metadata.create_all(self.engine)
-        return table
+        with self.engine.begin() as conn:
+            conn.execute(text(query))
 
     def load(self, conversation_id: str, speaker_id: str) -> str | None:
+        query = (
+            f"SELECT summary FROM {self.table_name} "
+            f"WHERE namespace = '{self.namespace}' "
+            f"AND conversation_id = '{conversation_id}' "
+            f"AND speaker_id = '{speaker_id}'"
+        )
         with self.engine.connect() as conn:
-            row = conn.execute(
-                select(self.summaries.c.summary).where(
-                    self.summaries.c.namespace == self.namespace,
-                    self.summaries.c.conversation_id == conversation_id,
-                    self.summaries.c.speaker_id == speaker_id,
-                )
-            ).first()
+            row = conn.execute(text(query)).first()
         return row[0] if row else None
 
     def load_all(self, conversation_id: str) -> dict[str, str]:
+        query = (
+            f"SELECT speaker_id, summary FROM {self.table_name} "
+            f"WHERE namespace = '{self.namespace}' "
+            f"AND conversation_id = '{conversation_id}' "
+            f"ORDER BY speaker_id"
+        )
         with self.engine.connect() as conn:
-            rows = conn.execute(
-                select(self.summaries.c.speaker_id, self.summaries.c.summary)
-                .where(
-                    self.summaries.c.namespace == self.namespace,
-                    self.summaries.c.conversation_id == conversation_id,
-                )
-                .order_by(self.summaries.c.speaker_id)
-            ).all()
+            rows = conn.execute(text(query)).all()
         return {speaker: summary for speaker, summary in rows}
 
     def load_by_speaker(self, speaker_id: str) -> list[str]:
         """All of a speaker's summaries in this namespace, one per conversation, ordered by conversation_id."""
+        query = (
+            f"SELECT summary FROM {self.table_name} "
+            f"WHERE namespace = '{self.namespace}' "
+            f"AND speaker_id = '{speaker_id}' "
+            f"ORDER BY conversation_id"
+        )
         with self.engine.connect() as conn:
-            rows = conn.execute(
-                select(self.summaries.c.summary)
-                .where(
-                    self.summaries.c.namespace == self.namespace,
-                    self.summaries.c.speaker_id == speaker_id,
-                )
-                .order_by(self.summaries.c.conversation_id)
-            ).all()
+            rows = conn.execute(text(query)).all()
         return [summary for (summary,) in rows]
 
     def save(self, conversation_id: str, speaker_id: str, summary: str) -> None:
-        stmt = mysql_insert(self.summaries).values(
-            namespace=self.namespace,
-            conversation_id=conversation_id,
-            speaker_id=speaker_id,
-            summary=summary,
+        query = (
+            f"INSERT INTO {self.table_name} (namespace, conversation_id, speaker_id, summary) "
+            f"VALUES ('{self.namespace}', '{conversation_id}', '{speaker_id}', :summary) "
+            f"ON DUPLICATE KEY UPDATE summary = VALUES(summary)"
         )
-        stmt = stmt.on_duplicate_key_update(summary=stmt.inserted.summary)
         with self.engine.begin() as conn:
-            conn.execute(stmt)
+            conn.execute(text(query), {"summary": summary})
+
+    def delete_conversations(self, conversation_ids: list[str]) -> None:
+        """Wipe this namespace's rows for the given conversation_ids (e.g. before a re-run)."""
+        ids = "', '".join(conversation_ids)
+        query = (
+            f"DELETE FROM {self.table_name} "
+            f"WHERE namespace = '{self.namespace}' "
+            f"AND conversation_id IN ('{ids}')"
+        )
+        with self.engine.begin() as conn:
+            conn.execute(text(query))
+
+    def close(self) -> None:
+        self.engine.dispose()
+
+
+class BatchDatabase:
+    """Storage for one-shot, per-speaker summaries (see ``BatchSummaryMemory``).
+
+    Unlike ``Database``, rows are pooled across every conversation a speaker
+    appears in, so they're keyed by speaker alone -- there's no conversation_id.
+    """
+
+    def __init__(
+        self,
+        db_name: str = "ssubrahmanya",
+        table_name: str = "summary_batch",
+        *,
+        namespace: str,
+    ) -> None:
+        self.db_name = db_name
+        self.table_name = table_name
+        self.namespace = namespace
+        self.engine = _make_engine(db_name)
+        self._create_table()
+
+    def _create_table(self) -> None:
+        query = (
+            f"CREATE TABLE IF NOT EXISTS {self.table_name} ("
+            f"namespace VARCHAR(255) NOT NULL, "
+            f"speaker_id VARCHAR(255) NOT NULL, "
+            f"summary TEXT NOT NULL, "
+            f"PRIMARY KEY (namespace, speaker_id)"
+            f") ENGINE=InnoDB"
+        )
+        with self.engine.begin() as conn:
+            conn.execute(text(query))
+
+    def load(self, speaker_id: str) -> str | None:
+        query = (
+            f"SELECT summary FROM {self.table_name} "
+            f"WHERE namespace = '{self.namespace}' "
+            f"AND speaker_id = '{speaker_id}'"
+        )
+        with self.engine.connect() as conn:
+            row = conn.execute(text(query)).first()
+        return row[0] if row else None
+
+    def save(self, speaker_id: str, summary: str) -> None:
+        query = (
+            f"INSERT INTO {self.table_name} (namespace, speaker_id, summary) "
+            f"VALUES ('{self.namespace}', '{speaker_id}', :summary) "
+            f"ON DUPLICATE KEY UPDATE summary = VALUES(summary)"
+        )
+        with self.engine.begin() as conn:
+            conn.execute(text(query), {"summary": summary})
 
     def close(self) -> None:
         self.engine.dispose()

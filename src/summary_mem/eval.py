@@ -41,15 +41,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
 import tqdm
+from dotenv import load_dotenv
 from openai import OpenAI
 
-from .clients import get_chat_client
-from .config import DEFAULT_DB_NAME, DEFAULT_LLM_MODEL
 from .memory import SummaryMemory
 from .prompts.qa import (
     JUDGE_SYSTEM_PROMPT,
@@ -57,6 +57,16 @@ from .prompts.qa import (
     QA_SYSTEM_PROMPT,
     QA_TEMPLATE,
 )
+
+load_dotenv()
+
+
+def get_chat_client(base_url: str = "http://localhost:8000/v1") -> OpenAI:
+    """OpenAI client for chat/summarization calls (local vLLM server by default)."""
+    return OpenAI(
+        base_url=base_url,
+        api_key=os.environ["OPENROUTER_API_KEY"],
+    )
 
 
 @dataclass
@@ -83,9 +93,9 @@ class MemoryEvaluator:
         chat_client: OpenAI,
         *,
         conversation_id: str = "eval",
-        model: str = DEFAULT_LLM_MODEL,
+        model: str = "Qwen/Qwen3-8B",
         memory: SummaryMemory | None = None,
-        db_name: str = DEFAULT_DB_NAME,
+        db_name: str = "ssubrahmanya",
         namespace: str = "longmemeval",
     ) -> None:
         self.chat_client = chat_client
@@ -197,9 +207,9 @@ def evaluate_dataset(
     path: Path,
     *,
     chat_client: OpenAI | None = None,
-    model: str = DEFAULT_LLM_MODEL,
+    model: str = "Qwen/Qwen3-8B",
     limit: int | None = None,
-    db_name: str = DEFAULT_DB_NAME,
+    db_name: str = "ssubrahmanya",
     namespace: str = "longmemeval",
 ) -> dict:
     """Run the full LongMemEval-format dataset and report accuracy.
@@ -290,10 +300,10 @@ def main() -> None:
         description="Evaluate summary-mem's recall on LongMemEval-style data.",
     )
     parser.add_argument("--data", type=Path, default=None, help="LongMemEval JSON file (omit for the built-in toy run)")
-    parser.add_argument("--model", default=DEFAULT_LLM_MODEL, help="LLM for answering, summarizing, and judging")
+    parser.add_argument("--model", default="Qwen/Qwen3-8B", help="LLM for answering, summarizing, and judging")
     parser.add_argument("--limit", type=int, default=None, help="evaluate only the first N instances")
     parser.add_argument("--out", type=Path, default=None, help="write per-question records as JSON here")
-    parser.add_argument("--db-name", default=DEFAULT_DB_NAME, help="MySQL database to store summaries in")
+    parser.add_argument("--db-name", default="ssubrahmanya", help="MySQL database to store summaries in")
     parser.add_argument(
         "--namespace",
         default="longmemeval",

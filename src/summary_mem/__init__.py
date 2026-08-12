@@ -7,9 +7,9 @@ Drop-in for the memLLM benchmark. To register it there, add to
     MEMORIES["summary_mem"] = SummaryMemory
 """
 
-from .memory import InContextMemory, SummaryMemory
+from .memory import BatchSummaryMemory, ConversationBatchSummaryMemory, InContextMemory, SummaryMemory
 
-__all__ = ["InContextMemory", "SummaryMemory"]
+__all__ = ["BatchSummaryMemory", "ConversationBatchSummaryMemory", "InContextMemory", "SummaryMemory"]
 
 # The evaluation harness (LongMemEval-style recall test) lives in
 # ``summary_mem.eval`` and is imported from there to keep ``python -m
